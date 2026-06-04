@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🍱 團體點餐</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --g: #06C755;
+  --gd: #05a548;
+  --gl: #e8f9ef;
+  --gb: #b3e6c8;
+  --bg: #f5f5f5;
+  --bg2: #ffffff;
+  --bg3: #f0f0f0;
+  --text: #1a1a1a;
+  --text2: #666;
+  --text3: #999;
+  --border: rgba(0,0,0,0.12);
+  --border2: rgba(0,0,0,0.22);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --bg2: #242424;
+    --bg3: #2e2e2e;
+    --text: #f0f0f0;
+    --text2: #aaa;
+    --text3: #666;
+    --border: rgba(255,255,255,0.12);
+    --border2: rgba(255,255,255,0.22);
+    --gl: #0a2e18;
+    --gb: #0f4a28;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; color: var(--text); min-height: 100vh; }
+.app { max-width: 480px; margin: 0 auto; background: var(--bg2); min-height: 100vh; position: relative; }
+.hdr { background: var(--g); color: white; padding: 16px; display: flex; align-items: center; gap: 12px; }
+.hdr-ico { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hdr-ico i { color: var(--g); font-size: 22px; }
+.hdr-title { font-size: 17px; font-weight: 600; }
+.hdr-sub { font-size: 13px; opacity: .85; margin-top: 1px; }
+.tabs { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg2); position: sticky; top: 0; z-index: 10; }
+.tab { flex: 1; padding: 12px 4px; text-align: center; font-size: 13px; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.tab.active { color: var(--g); border-bottom-color: var(--g); font-weight: 500; }
+.tab i { font-size: 15px; vertical-align: -2px; margin-right: 3px; }
+.panel { display: none; padding: 14px; }
+.panel.active { display: block; }
+.lbl { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.hint { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+.field-group { display: flex; gap: 8px; margin-bottom: 8px; }
+.field-group input { height: 40px; font-size: 14px; padding: 0 10px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); -webkit-appearance: none; }
+.field-group input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 2px rgba(6,199,85,.15); }
+#iName { flex: 3; min-width: 0; }
+#iPrice { flex: 2; min-width: 0; }
+#iQty { width: 56px; flex-shrink: 0; }
+.note-field { display: flex; gap: 8px; margin-bottom: 12px; }
+.note-field input { flex: 1; height: 36px; font-size: 13px; padding: 0 10px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg3); color: var(--text); }
+.note-field input:focus { outline: none; border-color: var(--g); background: var(--bg2); }
+.add-btn { height: 40px; padding: 0 16px; background: var(--g); color: white; border: none; border-radius: var(--radius); font-size: 15px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+.add-btn:active { background: var(--gd); transform: scale(0.97); }
+.name-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.name-row input { flex: 1; height: 40px; font-size: 14px; padding: 0 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); }
+.name-row input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 2px rgba(6,199,85,.15); }
+.cart-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.cart-item { padding: 10px 12px; background: var(--bg3); border-radius: var(--radius); border: 0.5px solid var(--border); }
+.ci-top { display: flex; align-items: center; gap: 8px; }
+.ci-name { flex: 1; font-size: 14px; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ci-price { font-size: 12px; color: var(--text3); white-space: nowrap; }
+.qty-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.qb { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text); }
+.qb:active { background: var(--gl); }
+.qn { font-size: 15px; font-weight: 500; min-width: 20px; text-align: center; color: var(--text); }
+.ci-sub { font-size: 13px; font-weight: 500; color: var(--text); min-width: 56px; text-align: right; white-space: nowrap; }
+.ci-del { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 4px; flex-shrink: 0; }
+.ci-note { font-size: 12px; color: var(--text3); margin-top: 5px; padding-left: 2px; }
+.ci-note i { font-size: 13px; vertical-align: -1px; margin-right: 3px; }
+.summary { padding: 12px 14px; background: var(--gl); border-radius: var(--radius); border: 0.5px solid var(--gb); margin-bottom: 12px; }
+.sum-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: var(--gd); }
+.submit-btn { width: 100%; height: 48px; background: var(--g); color: white; border: none; border-radius: var(--radius-lg); font-size: 16px; font-weight: 500; cursor: pointer; letter-spacing: .02em; }
+.submit-btn:active { background: var(--gd); }
+.submit-btn:disabled { background: var(--border2); cursor: default; color: var(--text3); }
+.empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
+.empty i { font-size: 36px; margin-bottom: 10px; display: block; opacity: .3; }
+.order-card { background: var(--bg3); border-radius: var(--radius-lg); border: 0.5px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.oc-hdr { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--g); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; flex-shrink: 0; }
+.oc-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oc-total { font-size: 13px; font-weight: 500; color: var(--gd); white-space: nowrap; }
+.pay-badge { font-size: 12px; padding: 4px 10px; border-radius: 20px; cursor: pointer; border: none; font-weight: 500; flex-shrink: 0; transition: all .15s; }
+.pay-badge.paid { background: #dcf5e7; color: #085041; }
+.pay-badge.unpaid { background: #fde8e8; color: #791f1f; }
+.oc-del { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 4px; flex-shrink: 0; }
+.oc-items { padding: 10px 14px; }
+.oi-row { font-size: 13px; color: var(--text2); padding: 2px 0; }
+.oi-main { display: flex; justify-content: space-between; }
+.oi-note { font-size: 12px; color: var(--text3); padding-left: 4px; margin-top: 1px; }
+.oi-note i { font-size: 12px; vertical-align: -1px; margin-right: 2px; }
+.sec-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.clear-btn { font-size: 12px; color: var(--text3); background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 5px 12px; cursor: pointer; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--bg3); border-radius: var(--radius); padding: 14px 12px; text-align: center; }
+.stat-n { font-size: 22px; font-weight: 600; color: var(--text); }
+.stat-l { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.pay-summary { display: flex; gap: 10px; margin-bottom: 14px; }
+.pay-box { flex: 1; padding: 12px; border-radius: var(--radius); text-align: center; border: 0.5px solid; }
+.pay-box.paid-box { background: #e8f9ef; border-color: var(--gb); }
+.pay-box.unpaid-box { background: #fde8e8; border-color: #f7c1c1; }
+.pay-box .pn { font-size: 18px; font-weight: 600; }
+.pay-box.paid-box .pn { color: #085041; }
+.pay-box.unpaid-box .pn { color: #791f1f; }
+.pay-box .pl { font-size: 12px; margin-top: 3px; }
+.pay-box.paid-box .pl { color: #0f6e56; }
+.pay-box.unpaid-box .pl { color: #a32d2d; }
+.isum-row { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--bg3); border-radius: var(--radius); margin-bottom: 6px; border: 0.5px solid var(--border); }
+.isum-name { flex: 1; font-size: 13px; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.isum-price { font-size: 12px; color: var(--text3); white-space: nowrap; }
+.isum-qty { font-size: 13px; color: var(--text2); white-space: nowrap; }
+.isum-amt { font-size: 13px; font-weight: 500; color: var(--gd); min-width: 64px; text-align: right; white-space: nowrap; }
+.copy-btn { width: 100%; height: 44px; background: var(--bg3); color: var(--text); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); font-size: 14px; cursor: pointer; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.copy-btn:active { background: var(--gb); }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.82); color: white; padding: 10px 20px; border-radius: 24px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 999; white-space: nowrap; backdrop-filter: blur(4px); }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-ico"><i class="ti ti-shopping-cart"></i></div>
+    <div>
+      <div class="hdr-title">🍱 團體點餐</div>
+      <div class="hdr-sub">自由輸入餐點，一起統計！</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('order')"><i class="ti ti-pencil"></i>我要點餐</div>
+    <div class="tab" onclick="switchTab('list')"><i class="ti ti-list"></i>所有訂單</div>
+    <div class="tab" onclick="switchTab('stats')"><i class="ti ti-chart-bar"></i>統計彙整</div>
+  </div>
+
+  <div id="tab-order" class="panel active">
+    <div class="lbl">你的名字</div>
+    <div class="name-row">
+      <input id="uName" type="text" placeholder="輸入你的名字" maxlength="12">
+    </div>
+    <div class="lbl">新增餐點</div>
+    <p class="hint">填入名稱、單價、數量後按 + 加入</p>
+    <div class="field-group">
+      <input id="iName" type="text" placeholder="餐點名稱" maxlength="20">
+      <input id="iPrice" type="number" placeholder="單價" min="0" step="1">
+      <input id="iQty" type="number" placeholder="數" min="1" value="1" step="1">
+      <button class="add-btn" onclick="addItem()"><i class="ti ti-plus"></i></button>
+    </div>
+    <div class="note-field">
+      <input id="iNote" type="text" placeholder="備註（可選）：不加辣、少冰、去冰…" maxlength="40">
+    </div>
+    <div id="cartList" class="cart-list"></div>
+    <div id="cartSummary" style="display:none" class="summary">
+      <div class="sum-total"><span>小計</span><span id="cartTotal">NT$ 0</span></div>
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="submitOrder()" disabled>送出訂單</button>
+  </div>
+
+  <div id="tab-list" class="panel">
+    <div class="sec-hdr">
+      <span style="font-size:15px;font-weight:500">所有訂單</span>
+      <button class="clear-btn" onclick="clearAll()"><i class="ti ti-trash" style="font-size:13px;vertical-align:-1px"></i> 清空全部</button>
+    </div>
+    <div id="orderList"></div>
+  </div>
+
+  <div id="tab-stats" class="panel">
+    <div id="statsContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let cart = [];
+let orders = [];
+try { orders = JSON.parse(localStorage.getItem('grporder_v1') || '[]'); } catch(e) {}
+
+function save() { try { localStorage.setItem('grporder_v1', JSON.stringify(orders)); } catch(e) {} }
+
+function switchTab(t) {
+  ['order','list','stats'].forEach((n,i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', n===t);
+    document.getElementById('tab-'+n).classList.toggle('active', n===t);
+  });
+  if (t==='list') renderOrders();
+  if (t==='stats') renderStats();
+}
+
+function flash(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = '#e24b4a';
+  el.focus();
+  setTimeout(() => el.style.borderColor = '', 1200);
+}
+
+function addItem() {
+  const name = document.getElementById('iName').value.trim();
+  const price = parseInt(document.getElementById('iPrice').value) || 0;
+  const qty = Math.max(1, parseInt(document.getElementById('iQty').value) || 1);
+  const note = document.getElementById('iNote').value.trim();
+  if (!name) { flash('iName'); return; }
+  if (!price) { flash('iPrice'); return; }
+  const exist = cart.findIndex(c => c.name===name && c.price===price && c.note===note);
+  if (exist >= 0) { cart[exist].qty += qty; }
+  else { cart.push({ name, price, qty, note }); }
+  document.getElementById('iName').value = '';
+  document.getElementById('iPrice').value = '';
+  document.getElementById('iQty').value = '1';
+  document.getElementById('iNote').value = '';
+  document.getElementById('iName').focus();
+  renderCart();
+}
+
+function changeCartQty(i, d) { cart[i].qty = Math.max(1, cart[i].qty + d); renderCart(); }
+function removeCartItem(i) { cart.splice(i, 1); renderCart(); }
+
+function renderCart() {
+  const el = document.getElementById('cartList');
+  if (!cart.length) {
+    el.innerHTML = '';
+    document.getElementById('cartSummary').style.display = 'none';
+    document.getElementById('submitBtn').disabled = true;
+    return;
+  }
+  el.innerHTML = cart.map((c, i) => `
+    <div class="cart-item">
+      <div class="ci-top">
+        <span class="ci-name">${esc(c.name)}</span>
+        <span class="ci-price">NT$${c.price}</span>
+        <div class="qty-ctrl">
+          <button class="qb" onclick="changeCartQty(${i},-1)">−</button>
+          <span class="qn">${c.qty}</span>
+          <button class="qb" onclick="changeCartQty(${i},1)">+</button>
+        </div>
+        <span class="ci-sub">NT$ ${c.price * c.qty}</span>
+        <button class="ci-del" onclick="removeCartItem(${i})"><i class="ti ti-x"></i></button>
+      </div>
+      ${c.note ? `<div class="ci-note"><i class="ti ti-message-circle"></i>${esc(c.note)}</div>` : ''}
+    </div>`).join('');
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  document.getElementById('cartTotal').textContent = 'NT$ ' + total;
+  document.getElementById('cartSummary').style.display = 'block';
+  document.getElementById('submitBtn').disabled = false;
+}
+
+function submitOrder() {
+  const name = document.getElementById('uName').value.trim();
+  if (!name) { flash('uName'); showToast('請先輸入名字！'); return; }
+  if (!cart.length) { showToast('請先加入餐點！'); return; }
+  const items = cart.map(c => ({...c}));
+  const total = items.reduce((s, c) => s + c.price * c.qty, 0);
+  const idx = orders.findIndex(o => o.name === name);
+  if (idx >= 0) { orders[idx] = { name, items, total, paid: orders[idx].paid, time: Date.now() }; }
+  else { orders.push({ name, items, total, paid: false, time: Date.now() }); }
+  save();
+  cart = [];
+  renderCart();
+  showToast('✅ ' + name + ' 的訂單已送出！');
+}
+
+function togglePaid(i) { orders[i].paid = !orders[i].paid; save(); renderOrders(); }
+function deleteOrder(i) { orders.splice(i, 1); save(); renderOrders(); }
+
+function clearAll() {
+  if (!orders.length) return;
+  if (!confirm('確定要清空所有訂單？')) return;
+  orders = []; save(); renderOrders();
+  showToast('已清空所有訂單');
+}
+
+function renderOrders() {
+  const el = document.getElementById('orderList');
+  if (!orders.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard"></i>還沒有人點餐</div>'; return; }
+  el.innerHTML = orders.map((o, oi) => {
+    const rows = o.items.map(i => `
+      <div class="oi-row">
+        <div class="oi-main"><span>${esc(i.name)} × ${i.qty}</span><span>NT$ ${i.price * i.qty}</span></div>
+        ${i.note ? `<div class="oi-note"><i class="ti ti-message-circle"></i>${esc(i.note)}</div>` : ''}
+      </div>`).join('');
+    return `<div class="order-card">
+      <div class="oc-hdr">
+        <div class="avatar">${esc(o.name.slice(0,1))}</div>
+        <span class="oc-name">${esc(o.name)}</span>
+        <span class="oc-total">NT$ ${o.total}</span>
+        <button class="pay-badge ${o.paid ? 'paid' : 'unpaid'}" onclick="togglePaid(${oi})">${o.paid ? '✓ 已付' : '未付'}</button>
+        <button class="oc-del" onclick="deleteOrder(${oi})"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="oc-items">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderStats() {
+  const el = document.getElementById('statsContent');
+  if (!orders.length) { el.innerHTML = '<div class="empty"><i class="ti ti-chart-bar"></i>還沒有訂單資料</div>'; return; }
+  const totalAmt = orders.reduce((s, o) => s + o.total, 0);
+  const paidAmt = orders.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
+  const paidCount = orders.filter(o => o.paid).length;
+  const imap = {};
+  orders.forEach(o => o.items.forEach(i => {
+    const k = i.name + '|' + i.price;
+    if (!imap[k]) imap[k] = { name: i.name, price: i.price, qty: 0, amt: 0 };
+    imap[k].qty += i.qty; imap[k].amt += i.price * i.qty;
+  }));
+  const sorted = Object.values(imap).sort((a, b) => b.qty - a.qty);
+  const totalItems = sorted.reduce((s, i) => s + i.qty, 0);
+  el.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-n">${orders.length}</div><div class="stat-l">點餐人數</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--gd)">NT$ ${totalAmt}</div><div class="stat-l">總金額</div></div>
+      <div class="stat"><div class="stat-n">${totalItems}</div><div class="stat-l">總份數</div></div>
+      <div class="stat"><div class="stat-n">NT$ ${Math.round(totalAmt / orders.length)}</div><div class="stat-l">平均消費</div></div>
+    </div>
+    <div class="lbl" style="margin-bottom:8px">付款狀況</div>
+    <div class="pay-summary">
+      <div class="pay-box paid-box">
+        <div class="pn">NT$ ${paidAmt}</div>
+        <div class="pl">已付 ${paidCount} 人</div>
+      </div>
+      <div class="pay-box unpaid-box">
+        <div class="pn">NT$ ${totalAmt - paidAmt}</div>
+        <div class="pl">未付 ${orders.length - paidCount} 人</div>
+      </div>
+    </div>
+    <div class="lbl" style="margin-bottom:8px">各品項統計</div>
+    ${sorted.map(i => `
+      <div class="isum-row">
+        <span class="isum-name">${esc(i.name)}</span>
+        <span class="isum-price">NT$${i.price}/份</span>
+        <span class="isum-qty">${i.qty} 份</span>
+        <span class="isum-amt">NT$ ${i.amt}</span>
+      </div>`).join('')}
+    <button class="copy-btn" onclick="copyResult()"><i class="ti ti-copy"></i> 複製統計結果，貼到 LINE 群組</button>
+  `;
+}
+
+function copyResult() {
+  const totalAmt = orders.reduce((s, o) => s + o.total, 0);
+  const imap = {};
+  orders.forEach(o => o.items.forEach(i => {
+    const k = i.name + '|' + i.price;
+    if (!imap[k]) imap[k] = { name: i.name, price: i.price, qty: 0, amt: 0 };
+    imap[k].qty += i.qty; imap[k].amt += i.price * i.qty;
+  }));
+  let txt = '🍱 團體點餐統計\n──────────────\n';
+  orders.forEach(o => {
+    txt += `${o.paid ? '✓' : '○'} ${o.name}：NT$ ${o.total}`;
+    const notes = o.items.filter(i => i.note).map(i => `${i.name}(${i.note})`);
+    if (notes.length) txt += ' ［' + notes.join('、') + '］';
+    txt += '\n';
+  });
+  txt += '──────────────\n';
+  Object.values(imap).sort((a, b) => b.qty - a.qty).forEach(i => { txt += `${i.name} × ${i.qty}份  NT$ ${i.amt}\n`; });
+  const paid = orders.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
+  txt += `──────────────\n💰 總計：NT$ ${totalAmt}（共 ${orders.length} 人）\n✓ 已付：NT$ ${paid}　○ 未付：NT$ ${totalAmt - paid}`;
+  navigator.clipboard.writeText(txt).then(() => showToast('📋 已複製！可貼到 LINE 群組'));
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+document.getElementById('iName').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iPrice').focus(); });
+document.getElementById('iPrice').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iQty').focus(); });
+document.getElementById('iQty').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iNote').focus(); });
+document.getElementById('iNote').addEventListener('keydown', e => { if(e.key==='Enter') addItem(); });
+</script>
+</body>
+</html>
