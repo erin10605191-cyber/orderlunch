@@ -156,6 +156,29 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .copy-btn:active{background:var(--gl)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:white;padding:10px 20px;border-radius:24px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
+.upload-zone{width:100%;min-height:80px;border:1.5px dashed var(--border2);border-radius:var(--radius);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--g);background:var(--gl)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone i{font-size:24px;color:var(--text3)}
+.upload-zone span{font-size:13px;color:var(--text3)}
+.upload-zone.has-img{padding:0;min-height:120px}
+.upload-zone.has-img img{width:100%;height:120px;object-fit:cover;display:block}
+.upload-preview-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg3);border-top:0.5px solid var(--border)}
+.upload-preview-bar span{font-size:12px;color:var(--text3)}
+.upload-preview-bar button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:2px 6px}
+.upload-preview-bar button:hover{color:#e24b4a}
+.menu-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--gl);border:0.5px solid var(--gb);border-radius:var(--radius);font-size:13px;color:var(--gd);font-weight:500;cursor:pointer;width:100%;margin-bottom:12px;transition:background .15s}
+.menu-btn:active{background:var(--gb)}
+.menu-btn i{font-size:16px}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.lightbox.show{opacity:1;pointer-events:all}
+.lightbox img{max-width:96vw;max-height:80vh;border-radius:var(--radius);object-fit:contain}
+.lightbox-close{position:absolute;top:16px;right:16px;width:40px;height:40px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:white;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lightbox-close:active{background:rgba(255,255,255,.25)}
+.lightbox-caption{color:rgba(255,255,255,.6);font-size:13px;margin-top:12px}
+.upload-progress{height:3px;background:var(--gl);border-radius:2px;margin-top:6px;overflow:hidden;display:none}
+.upload-progress.show{display:block}
+.upload-progress-bar{height:100%;background:var(--g);border-radius:2px;width:0;transition:width .3s}
 </style>
 </head>
 <body>
@@ -190,6 +213,9 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
       <div class="tab" id="tab-btn-stats"><i class="ti ti-chart-bar"></i>統計彙整</div>
     </div>
     <div id="tab-order" class="panel active">
+      <div id="menuBtnWrap" style="display:none">
+        <button class="menu-btn" id="menuBtn"><i class="ti ti-photo"></i> 查看菜單</button>
+      </div>
       <div id="closedNotice" class="closed-notice" style="display:none"><i class="ti ti-lock"></i> 此揪團已截止收單，無法點餐</div>
       <div class="lbl">你的名字</div>
       <div class="name-row"><input id="uName" type="text" placeholder="輸入你的名字" maxlength="12"></div>
@@ -248,6 +274,15 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
       <label class="form-label">收單時間</label>
       <input class="form-input" id="gTime" type="time">
     </div>
+    <div class="form-row">
+      <label class="form-label">菜單圖片（可選）</label>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="gMenuImg" accept="image/*">
+        <i class="ti ti-photo-up"></i>
+        <span>點擊或拖曳上傳菜單圖片</span>
+      </div>
+      <div class="upload-progress" id="uploadProgress"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="btnCancelModal">取消</button>
       <button class="btn-confirm" id="btnConfirmModal">建立揪團</button>
@@ -257,9 +292,17 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 
 <div class="toast" id="toast"></div>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose"><i class="ti ti-x"></i></button>
+  <img id="lightboxImg" src="" alt="菜單">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, remove, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLl_EZ3PAsVKPdE_CacCKN6-ZqXZhd5ck",
@@ -273,6 +316,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 
 const EMOJIS = ['🍱','🍜','🍣','🍔','🌮','🍕','🥗','🍗','🥤','🧋','☕','🍩'];
 let selectedEmoji = EMOJIS[0];
@@ -381,6 +425,15 @@ function enterGroup(id){
   document.getElementById('orderHdrTitle').textContent = (g.emoji||'🍱') + ' ' + g.name;
   const sub = document.getElementById('orderHdrSub');
   sub.innerHTML = g.date ? `<i class="ti ti-clock"></i> 收單：${formatDeadline(g)}` : '';
+  // Show/hide menu button
+  const menuWrap = document.getElementById('menuBtnWrap');
+  const menuBtn = document.getElementById('menuBtn');
+  if(g.menuUrl){
+    menuWrap.style.display = 'block';
+    menuBtn.onclick = () => openLightbox(g.menuUrl, (g.emoji||'🍱') + ' ' + g.name + ' 菜單');
+  } else {
+    menuWrap.style.display = 'none';
+  }
   switchTab('order');
   checkClosed();
   if(ordersUnsubscribe) ordersUnsubscribe();
@@ -421,6 +474,13 @@ function openModal(){
   document.getElementById('gName').value = '';
   document.getElementById('gDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('gTime').value = '11:30';
+  // Reset upload zone
+  menuImgFile = null;
+  const zone = document.getElementById('uploadZone');
+  zone.classList.remove('has-img');
+  zone.innerHTML = `<input type="file" id="gMenuImg" accept="image/*"><i class="ti ti-photo-up"></i><span>點擊或拖曳上傳菜單圖片</span>`;
+  bindUploadZone();
+  document.getElementById('uploadProgress').classList.remove('show');
   buildEmojiGrid();
   document.getElementById('modalOverlay').classList.add('show');
 }
@@ -435,9 +495,34 @@ async function createGroup(){
   const date = document.getElementById('gDate').value;
   const time = document.getElementById('gTime').value;
   const newRef = push(ref(db, 'groups'));
-  await set(newRef, { name, emoji: selectedEmoji, date, time, createdAt: Date.now() });
-  closeModal();
-  showToast('✅ 揪團「' + name + '」已建立！');
+  const groupId = newRef.key;
+  const confirmBtn = document.getElementById('btnConfirmModal');
+  confirmBtn.disabled = true; confirmBtn.textContent = '建立中…';
+  try {
+    let menuUrl = null;
+    if(menuImgFile){
+      menuUrl = await uploadMenuImage(groupId, menuImgFile);
+    }
+    await set(newRef, { name, emoji: selectedEmoji, date, time, createdAt: Date.now(), ...(menuUrl ? {menuUrl} : {}) });
+    closeModal();
+    showToast('✅ 揪團「' + name + '」已建立！');
+  } catch(e){ showToast('❌ 建立失敗，請重試'); }
+  confirmBtn.disabled = false; confirmBtn.textContent = '建立揪團';
+}
+
+async function uploadMenuImage(groupId, file){
+  return new Promise((resolve, reject) => {
+    const storageRef = sref(storage, 'menus/' + groupId + '/' + file.name);
+    const task = uploadBytesResumable(storageRef, file);
+    const bar = document.getElementById('uploadProgressBar');
+    const prog = document.getElementById('uploadProgress');
+    prog.classList.add('show');
+    task.on('state_changed',
+      snap => { bar.style.width = (snap.bytesTransferred / snap.totalBytes * 100) + '%'; },
+      err => reject(err),
+      async () => { resolve(await getDownloadURL(task.snapshot.ref)); }
+    );
+  });
 }
 
 // ── Order Panel ───────────────────────────────────────
@@ -664,8 +749,64 @@ function copyResult(){
   navigator.clipboard.writeText(txt).then(() => showToast('📋 已複製！可貼到 LINE 群組'));
 }
 
+// ── Menu image upload helpers ─────────────────────────
+let menuImgFile = null;
+
+function bindUploadZone(){
+  const input = document.getElementById('gMenuImg');
+  const zone = document.getElementById('uploadZone');
+  if(!input || !zone) return;
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if(file) setMenuPreview(file);
+  });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')) setMenuPreview(file);
+  });
+}
+
+function setMenuPreview(file){
+  menuImgFile = file;
+  const zone = document.getElementById('uploadZone');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    zone.classList.add('has-img');
+    zone.innerHTML = `
+      <img src="${ev.target.result}" alt="菜單預覽">
+      <div class="upload-preview-bar">
+        <span>${file.name}</span>
+        <button id="btnRemoveImg" title="移除"><i class="ti ti-x"></i></button>
+      </div>`;
+    document.getElementById('btnRemoveImg').addEventListener('click', e => {
+      e.stopPropagation();
+      menuImgFile = null;
+      zone.classList.remove('has-img');
+      zone.innerHTML = '<input type="file" id="gMenuImg" accept="image/*"><i class="ti ti-photo-up"></i><span>點擊或拖曳上傳菜單圖片</span>';
+      bindUploadZone();
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── Lightbox ──────────────────────────────────────────
+function openLightbox(url, caption){
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxCaption').textContent = caption || '';
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('show');
+}
+
 // ── Event Bindings ────────────────────────────────────
 document.getElementById('btnNewGroup').addEventListener('click', openModal);
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+document.getElementById('lightbox').addEventListener('click', e => { if(e.target === document.getElementById('lightbox')) closeLightbox(); });
+bindUploadZone();
 document.getElementById('btnBack').addEventListener('click', () => {
   document.getElementById('screen-order').classList.remove('active');
   document.getElementById('screen-groups').classList.add('active');
