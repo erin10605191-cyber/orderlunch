@@ -179,7 +179,7 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
     <div class="hdr">
       <button class="back-btn" id="btnBack"><i class="ti ti-arrow-left"></i></button>
       <div class="hdr-info">
-        <div class="hdr-title" id="orderHdrTitle">🍜 辦公室點餐</div>
+        <div class="hdr-title" id="orderHdrTitle">揪團點餐</div>
         <div class="order-hdr-sub" id="orderHdrSub"></div>
       </div>
       <div class="sync-wrap"><div class="sync-dot live"></div><span>即時同步</span></div>
@@ -359,7 +359,6 @@ function renderGroups(){
     </div>`;
   }).join('');
 
-  // Bind group card clicks
   document.querySelectorAll('.group-card').forEach(card => {
     card.addEventListener('click', () => enterGroup(card.dataset.gid));
   });
@@ -503,7 +502,6 @@ function renderCart(){
         ${c.note ? `<span class="tag-note"><i class="ti ti-message-circle"></i>${esc(c.note)}</span>` : ''}
       </div>` : ''}
     </div>`).join('');
-  // Bind cart buttons
   document.querySelectorAll('.qb[data-ci]').forEach(btn => {
     btn.addEventListener('click', () => {
       const i = +btn.dataset.ci, d = +btn.dataset.d;
@@ -587,6 +585,19 @@ function renderOrders(){
   });
 }
 
+// ── Build item map: split normal vs half-rice ─────────
+function buildItemMap(orderList) {
+  const imap = {};
+  orderList.forEach(o => o.items.forEach(i => {
+    // Key includes half-rice flag so they're counted separately
+    const k = i.name + '|' + i.price + '|' + (i.half ? '1' : '0');
+    if(!imap[k]) imap[k] = { name: i.name, price: i.price, half: !!i.half, qty: 0, amt: 0 };
+    imap[k].qty += i.qty;
+    imap[k].amt += i.price * i.qty;
+  }));
+  return imap;
+}
+
 function renderStats(){
   const el = document.getElementById('statsContent');
   const list = Object.values(orders);
@@ -594,14 +605,11 @@ function renderStats(){
   const totalAmt = list.reduce((s,o) => s+o.total, 0);
   const paidAmt = list.filter(o=>o.paid).reduce((s,o) => s+o.total, 0);
   const paidCount = list.filter(o=>o.paid).length;
-  const imap = {};
-  list.forEach(o => o.items.forEach(i => {
-    const k = i.name + '|' + i.price;
-    if(!imap[k]) imap[k] = {name:i.name, price:i.price, qty:0, amt:0};
-    imap[k].qty += i.qty; imap[k].amt += i.price*i.qty;
-  }));
-  const sorted = Object.values(imap).sort((a,b) => b.qty-a.qty);
+
+  const imap = buildItemMap(list);
+  const sorted = Object.values(imap).sort((a,b) => b.qty - a.qty);
   const totalItems = sorted.reduce((s,i) => s+i.qty, 0);
+
   el.innerHTML = `
     <div class="stats-grid">
       <div class="stat"><div class="stat-n">${list.length}</div><div class="stat-l">點餐人數</div></div>
@@ -617,7 +625,7 @@ function renderStats(){
     <div class="lbl" style="margin-bottom:8px">各品項統計</div>
     ${sorted.map(i => `
       <div class="isum-row">
-        <span class="isum-name">${esc(i.name)}</span>
+        <span class="isum-name">${esc(i.name)}${i.half ? ' <span class="tag-half">🍚 半飯</span>' : ''}</span>
         <span class="isum-price">NT$${i.price}/份</span>
         <span class="isum-qty">${i.qty} 份</span>
         <span class="isum-amt">NT$ ${i.amt}</span>
@@ -631,12 +639,9 @@ function copyResult(){
   const g = groups[currentGroupId];
   const list = Object.values(orders);
   const totalAmt = list.reduce((s,o) => s+o.total, 0);
-  const imap = {};
-  list.forEach(o => o.items.forEach(i => {
-    const k = i.name + '|' + i.price;
-    if(!imap[k]) imap[k] = {name:i.name, price:i.price, qty:0, amt:0};
-    imap[k].qty += i.qty; imap[k].amt += i.price*i.qty;
-  }));
+
+  const imap = buildItemMap(list);
+
   let txt = `${g.emoji||'🍱'} ${g.name} 點餐統計\n`;
   if(g.date) txt += `📅 ${formatDeadline(g)}\n`;
   txt += '──────────────\n';
@@ -650,7 +655,10 @@ function copyResult(){
     txt += '\n';
   });
   txt += '──────────────\n';
-  Object.values(imap).sort((a,b) => b.qty-a.qty).forEach(i => { txt += `${i.name} × ${i.qty}份  NT$ ${i.amt}\n`; });
+  Object.values(imap).sort((a,b) => b.qty-a.qty).forEach(i => {
+    const label = i.half ? `${i.name}（半飯）` : i.name;
+    txt += `${label} × ${i.qty}份  NT$ ${i.amt}\n`;
+  });
   const paid = list.filter(o=>o.paid).reduce((s,o) => s+o.total, 0);
   txt += `──────────────\n💰 總計：NT$ ${totalAmt}（共 ${list.length} 人）\n✓ 已付：NT$ ${paid}　○ 未付：NT$ ${totalAmt-paid}`;
   navigator.clipboard.writeText(txt).then(() => showToast('📋 已複製！可貼到 LINE 群組'));
