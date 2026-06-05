@@ -6,24 +6,21 @@
 <title>🍱 團體點餐</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
-:root {
-  --g: #06C755; --gd: #05a548; --gl: #e8f9ef; --gb: #b3e6c8;
-  --bg: #f5f5f5; --bg2: #ffffff; --bg3: #f0f0f0;
-  --text: #1a1a1a; --text2: #666; --text3: #999;
-  --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
-  --radius: 8px; --radius-lg: 12px;
+:root{
+  --g:#06C755;--gd:#05a548;--gl:#e8f9ef;--gb:#b3e6c8;
+  --bg:#f5f5f5;--bg2:#ffffff;--bg3:#f0f0f0;
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
+  --radius:8px;--radius-lg:12px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:#1a1a1a;--bg2:#242424;--bg3:#2e2e2e;
-    --text:#f0f0f0;--text2:#aaa;--text3:#666;
-    --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
-    --gl:#0a2e18;--gb:#0f4a28;
-  }
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1a1a1a;--bg2:#242424;--bg3:#2e2e2e;--text:#f0f0f0;--text2:#aaa;--text3:#666;--border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);--gl:#0a2e18;--gb:#0f4a28;}
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:var(--text);min-height:100vh}
 .app{max-width:480px;margin:0 auto;background:var(--bg2);min-height:100vh}
+
+/* Header */
 .hdr{background:var(--g);color:white;padding:16px;display:flex;align-items:center;gap:12px}
 .hdr-ico{width:40px;height:40px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hdr-ico i{color:var(--g);font-size:22px}
@@ -33,6 +30,64 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .sync-wrap{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.7);flex-shrink:0}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);transition:background .3s}
 .sync-dot.live{background:#fff}
+.back-btn{background:rgba(255,255,255,.2);border:none;color:white;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:18px}
+.back-btn:active{background:rgba(255,255,255,.35)}
+
+/* Screens */
+.screen{display:none}
+.screen.active{display:block}
+
+/* Group List */
+.group-list{padding:14px;display:flex;flex-direction:column;gap:10px}
+.new-group-btn{width:100%;height:48px;background:var(--g);color:white;border:none;border-radius:var(--radius-lg);font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
+.new-group-btn:active{background:var(--gd)}
+.group-card{background:var(--bg3);border-radius:var(--radius-lg);border:0.5px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.group-card:active{border-color:var(--g)}
+.gc-body{padding:14px}
+.gc-top{display:flex;align-items:flex-start;gap:10px}
+.gc-emoji{font-size:28px;flex-shrink:0}
+.gc-info{flex:1;min-width:0}
+.gc-name{font-size:16px;font-weight:600;color:var(--text)}
+.gc-meta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;flex-direction:column;gap:2px}
+.gc-meta span{display:flex;align-items:center;gap:4px}
+.gc-meta i{font-size:13px}
+.gc-status{flex-shrink:0}
+.status-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.status-open{background:#e8f9ef;color:#085041}
+.status-closed{background:#fde8e8;color:#791f1f}
+.status-upcoming{background:#fff3e0;color:#7a4500}
+.gc-footer{padding:10px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg2)}
+.gc-stat{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.gc-stat i{font-size:14px;color:var(--text3)}
+.gc-del{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:4px}
+.gc-del:active{color:#e24b4a}
+.empty-groups{text-align:center;padding:48px 16px;color:var(--text3)}
+.empty-groups i{font-size:40px;display:block;margin-bottom:12px;opacity:.3}
+.empty-groups p{font-size:14px;margin-bottom:4px}
+.empty-groups small{font-size:12px;opacity:.7}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:20px;width:100%;max-width:480px;transform:translateY(20px);transition:transform .2s}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-title i{color:var(--g);font-size:20px}
+.form-row{margin-bottom:12px}
+.form-label{font-size:12px;color:var(--text3);margin-bottom:5px;display:block;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.form-input{width:100%;height:40px;font-size:14px;padding:0 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);-webkit-appearance:none}
+.form-input:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 2px rgba(6,199,85,.15)}
+.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:4px}
+.emoji-opt{width:100%;aspect-ratio:1;font-size:22px;background:var(--bg3);border:2px solid transparent;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.emoji-opt.selected{border-color:var(--g);background:var(--gl)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-cancel{flex:1;height:44px;background:var(--bg3);color:var(--text2);border:none;border-radius:var(--radius-lg);font-size:14px;cursor:pointer}
+.btn-confirm{flex:2;height:44px;background:var(--g);color:white;border:none;border-radius:var(--radius-lg);font-size:15px;font-weight:500;cursor:pointer}
+.btn-confirm:active{background:var(--gd)}
+
+/* Order Screen */
+.order-hdr-sub{font-size:12px;opacity:.8;margin-top:2px;display:flex;align-items:center;gap:6px}
+.order-hdr-sub i{font-size:13px}
 .tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:10}
 .tab{flex:1;padding:12px 4px;text-align:center;font-size:12px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
 .tab.active{color:var(--g);border-bottom-color:var(--g);font-weight:500}
@@ -44,9 +99,7 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .field-group{display:flex;gap:8px;margin-bottom:8px}
 .field-group input{height:40px;font-size:14px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);-webkit-appearance:none}
 .field-group input:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 2px rgba(6,199,85,.15)}
-#iName{flex:3;min-width:0}
-#iPrice{flex:2;min-width:0}
-#iQty{width:56px;flex-shrink:0}
+#iName{flex:3;min-width:0}#iPrice{flex:2;min-width:0}#iQty{width:56px;flex-shrink:0}
 .note-field{display:flex;gap:8px;margin-bottom:12px}
 .note-field input{flex:1;height:36px;font-size:13px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg3);color:var(--text)}
 .note-field input:focus{outline:none;border-color:var(--g);background:var(--bg2)}
@@ -62,6 +115,7 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .ci-price{font-size:12px;color:var(--text3);white-space:nowrap}
 .qty-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .qb{width:26px;height:26px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.qb:active{background:var(--gl)}
 .qn{font-size:15px;font-weight:500;min-width:20px;text-align:center;color:var(--text)}
 .ci-sub{font-size:13px;font-weight:500;color:var(--text);min-width:56px;text-align:right;white-space:nowrap}
 .ci-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;flex-shrink:0}
@@ -72,10 +126,12 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .submit-btn{width:100%;height:48px;background:var(--g);color:white;border:none;border-radius:var(--radius-lg);font-size:16px;font-weight:500;cursor:pointer}
 .submit-btn:active{background:var(--gd)}
 .submit-btn:disabled{background:var(--border2);cursor:default;color:var(--text3)}
+.closed-notice{background:#fde8e8;border:0.5px solid #f7c1c1;border-radius:var(--radius);padding:14px;text-align:center;font-size:13px;color:#791f1f;margin-bottom:12px;display:flex;align-items:center;gap:8px;justify-content:center}
+.closed-notice i{font-size:18px}
 .empty{text-align:center;padding:40px 16px;color:var(--text3);font-size:14px}
 .empty i{font-size:36px;margin-bottom:10px;display:block;opacity:.3}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
 .loading-state{text-align:center;padding:40px 16px;color:var(--text3);font-size:14px}
-.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--g);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .order-card{background:var(--bg3);border-radius:var(--radius-lg);border:0.5px solid var(--border);margin-bottom:10px;overflow:hidden}
 .oc-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:0.5px solid var(--border)}
@@ -114,65 +170,113 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .isum-amt{font-size:13px;font-weight:500;color:var(--gd);min-width:64px;text-align:right;white-space:nowrap}
 .copy-btn{width:100%;height:44px;background:var(--bg3);color:var(--text);border:0.5px solid var(--border2);border-radius:var(--radius-lg);font-size:14px;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px}
 .copy-btn:active{background:var(--gl)}
-.err-box{background:#fde8e8;border:0.5px solid #f7c1c1;border-radius:var(--radius);padding:14px;text-align:center;font-size:13px;color:#791f1f;margin-bottom:12px}
-.err-box i{font-size:20px;display:block;margin-bottom:6px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:white;padding:10px 20px;border-radius:24px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="hdr">
-    <div class="hdr-ico"><i class="ti ti-shopping-cart"></i></div>
-    <div class="hdr-info">
-      <div class="hdr-title">🍱 團體點餐</div>
-      <div class="hdr-sub">即時同步，大家一起點！</div>
+
+  <!-- Screen: Group List -->
+  <div id="screen-groups" class="screen active">
+    <div class="hdr">
+      <div class="hdr-ico"><i class="ti ti-shopping-cart"></i></div>
+      <div class="hdr-info">
+        <div class="hdr-title">🍱 團體點餐</div>
+        <div class="hdr-sub">選擇或新增揪團</div>
+      </div>
+      <div class="sync-wrap">
+        <div class="sync-dot" id="syncDot"></div>
+        <span id="syncLabel">連線中</span>
+      </div>
     </div>
-    <div class="sync-wrap">
-      <div class="sync-dot" id="syncDot"></div>
-      <span id="syncLabel">連線中</span>
+    <div class="group-list">
+      <button class="new-group-btn" onclick="openNewGroupModal()">
+        <i class="ti ti-plus"></i> 新增揪團
+      </button>
+      <div id="groupList"><div class="loading-state"><div class="spinner"></div><br>載入中…</div></div>
     </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('order')"><i class="ti ti-pencil"></i>我要點餐</div>
-    <div class="tab" onclick="switchTab('list')"><i class="ti ti-list"></i>所有訂單</div>
-    <div class="tab" onclick="switchTab('stats')"><i class="ti ti-chart-bar"></i>統計彙整</div>
+  <!-- Screen: Order -->
+  <div id="screen-order" class="screen">
+    <div class="hdr">
+      <button class="back-btn" onclick="goBack()"><i class="ti ti-arrow-left"></i></button>
+      <div class="hdr-info">
+        <div class="hdr-title" id="orderHdrTitle">揪團點餐</div>
+        <div class="order-hdr-sub" id="orderHdrSub"></div>
+      </div>
+      <div class="sync-wrap">
+        <div class="sync-dot live"></div>
+        <span>即時同步</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('order')"><i class="ti ti-pencil"></i>我要點餐</div>
+      <div class="tab" onclick="switchTab('list')"><i class="ti ti-list"></i>所有訂單</div>
+      <div class="tab" onclick="switchTab('stats')"><i class="ti ti-chart-bar"></i>統計彙整</div>
+    </div>
+    <div id="tab-order" class="panel active">
+      <div id="closedNotice" class="closed-notice" style="display:none">
+        <i class="ti ti-lock"></i> 此揪團已截止收單，無法點餐
+      </div>
+      <div class="lbl">你的名字</div>
+      <div class="name-row"><input id="uName" type="text" placeholder="輸入你的名字" maxlength="12"></div>
+      <div class="lbl">新增餐點</div>
+      <p class="hint">填入名稱、單價、數量後按 + 加入</p>
+      <div class="field-group">
+        <input id="iName" type="text" placeholder="餐點名稱" maxlength="20">
+        <input id="iPrice" type="number" placeholder="單價" min="0" step="1">
+        <input id="iQty" type="number" placeholder="數" min="1" value="1" step="1">
+        <button class="add-btn" onclick="addItem()"><i class="ti ti-plus"></i></button>
+      </div>
+      <div class="note-field">
+        <input id="iNote" type="text" placeholder="備註（可選）：不加辣、少冰、去冰…" maxlength="40">
+      </div>
+      <div id="cartList" class="cart-list"></div>
+      <div id="cartSummary" style="display:none" class="summary">
+        <div class="sum-total"><span>小計</span><span id="cartTotal">NT$ 0</span></div>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitOrder()" disabled>送出訂單</button>
+    </div>
+    <div id="tab-list" class="panel">
+      <div class="sec-hdr">
+        <span style="font-size:15px;font-weight:500">所有訂單</span>
+        <button class="clear-btn" onclick="clearAll()"><i class="ti ti-trash" style="font-size:13px;vertical-align:-1px"></i> 清空全部</button>
+      </div>
+      <div id="orderList"><div class="loading-state"><div class="spinner"></div><br>載入中…</div></div>
+    </div>
+    <div id="tab-stats" class="panel">
+      <div id="statsContent"><div class="loading-state"><div class="spinner"></div><br>載入中…</div></div>
+    </div>
   </div>
 
-  <div id="tab-order" class="panel active">
-    <div class="lbl">你的名字</div>
-    <div class="name-row">
-      <input id="uName" type="text" placeholder="輸入你的名字" maxlength="12">
-    </div>
-    <div class="lbl">新增餐點</div>
-    <p class="hint">填入名稱、單價、數量後按 + 加入</p>
-    <div class="field-group">
-      <input id="iName" type="text" placeholder="餐點名稱" maxlength="20">
-      <input id="iPrice" type="number" placeholder="單價" min="0" step="1">
-      <input id="iQty" type="number" placeholder="數" min="1" value="1" step="1">
-      <button class="add-btn" onclick="addItem()"><i class="ti ti-plus"></i></button>
-    </div>
-    <div class="note-field">
-      <input id="iNote" type="text" placeholder="備註（可選）：不加辣、少冰、去冰…" maxlength="40">
-    </div>
-    <div id="cartList" class="cart-list"></div>
-    <div id="cartSummary" style="display:none" class="summary">
-      <div class="sum-total"><span>小計</span><span id="cartTotal">NT$ 0</span></div>
-    </div>
-    <button class="submit-btn" id="submitBtn" onclick="submitOrder()" disabled>送出訂單</button>
-  </div>
+</div>
 
-  <div id="tab-list" class="panel">
-    <div class="sec-hdr">
-      <span style="font-size:15px;font-weight:500">所有訂單</span>
-      <button class="clear-btn" onclick="clearAll()"><i class="ti ti-trash" style="font-size:13px;vertical-align:-1px"></i> 清空全部</button>
+<!-- Modal: New Group -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-users"></i> 新增揪團</div>
+    <div class="form-row">
+      <label class="form-label">揪團名稱</label>
+      <input class="form-input" id="gName" type="text" placeholder="例：午餐團、下午茶、飲料團" maxlength="20">
     </div>
-    <div id="orderList"><div class="loading-state"><div class="spinner"></div><br>連線中，請稍候…</div></div>
-  </div>
-
-  <div id="tab-stats" class="panel">
-    <div id="statsContent"><div class="loading-state"><div class="spinner"></div><br>連線中，請稍候…</div></div>
+    <div class="form-row">
+      <label class="form-label">選個圖示</label>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">日期</label>
+      <input class="form-input" id="gDate" type="date">
+    </div>
+    <div class="form-row">
+      <label class="form-label">收單時間</label>
+      <input class="form-input" id="gTime" type="time">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-confirm" onclick="createGroup()">建立揪團</button>
+    </div>
   </div>
 </div>
 
@@ -180,7 +284,7 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, remove, onValue, update, connectDatabaseEmulator } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, remove, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLl_EZ3PAsVKPdE_CacCKN6-ZqXZhd5ck",
@@ -194,12 +298,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const ordersRef = ref(db, 'orders');
 
+const EMOJIS = ['🍱','🍜','🍣','🍔','🌮','🍕','🥗','🍗','🥤','🧋','☕','🍩'];
+let selectedEmoji = EMOJIS[0];
+let groups = {};
+let currentGroupId = null;
 let orders = {};
 let cart = [];
-let dbReady = false;
 let currentTab = 'order';
+let ordersUnsubscribe = null;
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -219,23 +326,168 @@ function flash(id){
 function setSync(ok){
   const dot=document.getElementById('syncDot');
   const lbl=document.getElementById('syncLabel');
-  if(ok){ dot.classList.add('live'); lbl.textContent='已連線'; }
-  else { dot.classList.remove('live'); lbl.textContent='連線失敗'; }
+  if(ok){dot.classList.add('live');lbl.textContent='已連線';}
+  else{dot.classList.remove('live');lbl.textContent='連線失敗';}
 }
 
+function getGroupStatus(g){
+  if(!g.date || !g.time) return 'open';
+  const deadline = new Date(g.date + 'T' + g.time);
+  const now = new Date();
+  const openFrom = new Date(g.date + 'T00:00:00');
+  if(now < openFrom) return 'upcoming';
+  if(now > deadline) return 'closed';
+  return 'open';
+}
+
+function formatDeadline(g){
+  if(!g.date) return '';
+  const d = new Date(g.date);
+  const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
+  return g.time ? `${dateStr} 收單 ${g.time}` : dateStr;
+}
+
+// === Group List ===
+function renderGroups(){
+  const el = document.getElementById('groupList');
+  const list = Object.entries(groups);
+  if(!list.length){
+    el.innerHTML=`<div class="empty-groups"><i class="ti ti-mood-empty"></i><p>還沒有揪團</p><small>按上方「新增揪團」開始吧！</small></div>`;
+    return;
+  }
+  list.sort((a,b)=>b[1].createdAt - a[1].createdAt);
+  el.innerHTML = list.map(([id,g])=>{
+    const status = getGroupStatus(g);
+    const statusMap = {open:'收單中',closed:'已截止',upcoming:'尚未開始'};
+    const statusClass = {open:'status-open',closed:'status-closed',upcoming:'status-upcoming'};
+    const orderCount = g.orders ? Object.keys(g.orders).length : 0;
+    const totalAmt = g.orders ? Object.values(g.orders).reduce((s,o)=>s+o.total,0) : 0;
+    return `<div class="group-card" onclick="enterGroup('${id}')">
+      <div class="gc-body">
+        <div class="gc-top">
+          <span class="gc-emoji">${g.emoji||'🍱'}</span>
+          <div class="gc-info">
+            <div class="gc-name">${esc(g.name)}</div>
+            <div class="gc-meta">
+              ${g.date?`<span><i class="ti ti-calendar"></i>${formatDeadline(g)}</span>`:'<span><i class="ti ti-infinity"></i>無截止時間</span>'}
+            </div>
+          </div>
+          <div class="gc-status"><span class="status-badge ${statusClass[status]}">${statusMap[status]}</span></div>
+        </div>
+      </div>
+      <div class="gc-footer">
+        <span class="gc-stat"><i class="ti ti-users"></i>${orderCount} 人點餐</span>
+        <span class="gc-stat" style="margin-left:12px"><i class="ti ti-cash"></i>NT$ ${totalAmt}</span>
+        <button class="gc-del" onclick="deleteGroup(event,'${id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.deleteGroup = async function(e, id){
+  e.stopPropagation();
+  if(!confirm('確定刪除這個揪團及所有訂單？')) return;
+  await remove(ref(db,'groups/'+id));
+  showToast('揪團已刪除');
+};
+
+window.enterGroup = function(id){
+  currentGroupId = id;
+  const g = groups[id];
+  document.getElementById('screen-groups').classList.remove('active');
+  document.getElementById('screen-order').classList.add('active');
+  document.getElementById('orderHdrTitle').textContent = (g.emoji||'🍱')+' '+g.name;
+  const sub = document.getElementById('orderHdrSub');
+  sub.innerHTML = g.date ? `<i class="ti ti-clock"></i> 收單：${formatDeadline(g)}` : '';
+  switchTab('order');
+  checkClosed();
+  // Subscribe to this group's orders
+  if(ordersUnsubscribe) ordersUnsubscribe();
+  const ordersRef = ref(db,'groups/'+id+'/orders');
+  ordersUnsubscribe = onValue(ordersRef, (snap)=>{
+    orders = snap.val() || {};
+    if(currentTab==='list') renderOrders();
+    if(currentTab==='stats') renderStats();
+  });
+};
+
+function checkClosed(){
+  const g = groups[currentGroupId];
+  if(!g) return;
+  const status = getGroupStatus(g);
+  const notice = document.getElementById('closedNotice');
+  const btn = document.getElementById('submitBtn');
+  const inputs = document.querySelectorAll('#tab-order input, #tab-order .add-btn');
+  if(status==='closed'){
+    notice.style.display='flex';
+    btn.disabled=true;
+    inputs.forEach(el=>el.disabled=true);
+  } else {
+    notice.style.display='none';
+    inputs.forEach(el=>el.disabled=false);
+  }
+}
+
+window.goBack = function(){
+  document.getElementById('screen-order').classList.remove('active');
+  document.getElementById('screen-groups').classList.add('active');
+  if(ordersUnsubscribe){ ordersUnsubscribe(); ordersUnsubscribe=null; }
+  currentGroupId=null; orders={}; cart=[]; renderCart();
+};
+
+// === Modal ===
+function buildEmojiGrid(){
+  const grid = document.getElementById('emojiGrid');
+  grid.innerHTML = EMOJIS.map(e=>`
+    <button class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}')">${e}</button>
+  `).join('');
+}
+
+window.selectEmoji = function(e){
+  selectedEmoji=e;
+  document.querySelectorAll('.emoji-opt').forEach(el=>el.classList.toggle('selected',el.textContent===e));
+};
+
+window.openNewGroupModal = function(){
+  selectedEmoji=EMOJIS[0];
+  document.getElementById('gName').value='';
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('gDate').value=today;
+  document.getElementById('gTime').value='11:30';
+  buildEmojiGrid();
+  document.getElementById('modalOverlay').classList.add('show');
+};
+
+window.closeModal = function(e){
+  if(e && e.target!==document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('show');
+};
+
+window.createGroup = async function(){
+  const name=document.getElementById('gName').value.trim();
+  if(!name){ document.getElementById('gName').style.borderColor='#e24b4a'; document.getElementById('gName').focus(); setTimeout(()=>document.getElementById('gName').style.borderColor='',1200); return; }
+  const date=document.getElementById('gDate').value;
+  const time=document.getElementById('gTime').value;
+  const newRef=push(ref(db,'groups'));
+  await set(newRef,{name,emoji:selectedEmoji,date,time,createdAt:Date.now()});
+  document.getElementById('modalOverlay').classList.remove('show');
+  showToast('✅ 揪團「'+name+'」已建立！');
+};
+
+// === Order Panel ===
 window.switchTab = function(t){
-  currentTab = t;
+  currentTab=t;
   ['order','list','stats'].forEach((n,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('active',n===t);
     document.getElementById('tab-'+n).classList.toggle('active',n===t);
   });
-  if(dbReady){
-    if(t==='list') renderOrders();
-    if(t==='stats') renderStats();
-  }
+  if(t==='list') renderOrders();
+  if(t==='stats') renderStats();
 };
 
 window.addItem = function(){
+  const g = groups[currentGroupId];
+  if(g && getGroupStatus(g)==='closed'){ showToast('此揪團已截止收單'); return; }
   const name=document.getElementById('iName').value.trim();
   const price=parseInt(document.getElementById('iPrice').value)||0;
   const qty=Math.max(1,parseInt(document.getElementById('iQty').value)||1);
@@ -286,40 +538,38 @@ function renderCart(){
 }
 
 window.submitOrder=async function(){
+  const g=groups[currentGroupId];
+  if(g&&getGroupStatus(g)==='closed'){showToast('此揪團已截止收單');return;}
   const name=document.getElementById('uName').value.trim();
   if(!name){flash('uName');showToast('請先輸入名字！');return;}
   if(!cart.length){showToast('請先加入餐點！');return;}
   const btn=document.getElementById('submitBtn');
-  btn.disabled=true; btn.textContent='送出中…';
+  btn.disabled=true;btn.textContent='送出中…';
   try{
     const items=cart.map(c=>({...c}));
     const total=items.reduce((s,c)=>s+c.price*c.qty,0);
     const key=name.replace(/[.#$[\]/]/g,'_');
     const existingPaid=orders[key]?orders[key].paid:false;
-    await set(ref(db,'orders/'+key),{name,items,total,paid:existingPaid,time:Date.now()});
-    cart=[];
-    renderCart();
+    await set(ref(db,'groups/'+currentGroupId+'/orders/'+key),{name,items,total,paid:existingPaid,time:Date.now()});
+    cart=[];renderCart();
     showToast('✅ '+name+' 的訂單已送出！');
-  }catch(e){
-    showToast('❌ 送出失敗，請重試');
-    btn.disabled=false;
-  }
-  btn.textContent='送出訂單';
+  }catch(e){showToast('❌ 送出失敗，請重試');}
+  btn.disabled=false;btn.textContent='送出訂單';
 };
 
 window.togglePaid=async function(key){
   const current=orders[key]?orders[key].paid:false;
-  await update(ref(db,'orders/'+key),{paid:!current});
+  await update(ref(db,'groups/'+currentGroupId+'/orders/'+key),{paid:!current});
 };
 
 window.deleteOrder=async function(key){
-  await remove(ref(db,'orders/'+key));
+  await remove(ref(db,'groups/'+currentGroupId+'/orders/'+key));
 };
 
 window.clearAll=async function(){
   if(!Object.keys(orders).length)return;
   if(!confirm('確定要清空所有訂單？'))return;
-  await remove(ordersRef);
+  await remove(ref(db,'groups/'+currentGroupId+'/orders'));
   showToast('已清空所有訂單');
 };
 
@@ -357,7 +607,7 @@ function renderStats(){
   list.forEach(o=>o.items.forEach(i=>{
     const k=i.name+'|'+i.price;
     if(!imap[k])imap[k]={name:i.name,price:i.price,qty:0,amt:0};
-    imap[k].qty+=i.qty; imap[k].amt+=i.price*i.qty;
+    imap[k].qty+=i.qty;imap[k].amt+=i.price*i.qty;
   }));
   const sorted=Object.values(imap).sort((a,b)=>b.qty-a.qty);
   const totalItems=sorted.reduce((s,i)=>s+i.qty,0);
@@ -386,15 +636,18 @@ function renderStats(){
 }
 
 window.copyResult=function(){
+  const g=groups[currentGroupId];
   const list=Object.values(orders);
   const totalAmt=list.reduce((s,o)=>s+o.total,0);
   const imap={};
   list.forEach(o=>o.items.forEach(i=>{
     const k=i.name+'|'+i.price;
     if(!imap[k])imap[k]={name:i.name,price:i.price,qty:0,amt:0};
-    imap[k].qty+=i.qty; imap[k].amt+=i.price*i.qty;
+    imap[k].qty+=i.qty;imap[k].amt+=i.price*i.qty;
   }));
-  let txt='🍱 團體點餐統計\n──────────────\n';
+  let txt=`${g.emoji||'🍱'} ${g.name} 點餐統計\n`;
+  if(g.date)txt+=`📅 ${formatDeadline(g)}\n`;
+  txt+='──────────────\n';
   list.forEach(o=>{
     txt+=`${o.paid?'✓':'○'} ${o.name}：NT$ ${o.total}`;
     const notes=o.items.filter(i=>i.note).map(i=>`${i.name}(${i.note})`);
@@ -408,19 +661,13 @@ window.copyResult=function(){
   navigator.clipboard.writeText(txt).then(()=>showToast('📋 已複製！可貼到 LINE 群組'));
 };
 
-// Firebase 即時監聽
-onValue(ordersRef, (snapshot)=>{
-  orders = snapshot.val() || {};
-  dbReady = true;
+// Firebase: listen to all groups
+onValue(ref(db,'groups'), (snap)=>{
+  groups = snap.val() || {};
   setSync(true);
-  if(currentTab==='list') renderOrders();
-  if(currentTab==='stats') renderStats();
-}, (error)=>{
-  setSync(false);
-  const errHtml=`<div class="err-box"><i class="ti ti-wifi-off"></i>連線失敗<br><small>${error.message}</small><br><br><button onclick="location.reload()" style="margin-top:8px;padding:6px 16px;background:var(--g);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px">重新整理</button></div>`;
-  document.getElementById('orderList').innerHTML=errHtml;
-  document.getElementById('statsContent').innerHTML=errHtml;
-});
+  renderGroups();
+  if(currentGroupId) checkClosed();
+}, ()=>setSync(false));
 
 document.getElementById('iName').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('iPrice').focus();});
 document.getElementById('iPrice').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('iQty').focus();});
