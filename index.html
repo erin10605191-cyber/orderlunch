@@ -24,30 +24,27 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1a1a1a;
-    --bg2: #242424;
-    --bg3: #2e2e2e;
-    --text: #f0f0f0;
-    --text2: #aaa;
-    --text3: #666;
-    --border: rgba(255,255,255,0.12);
-    --border2: rgba(255,255,255,0.22);
-    --gl: #0a2e18;
-    --gb: #0f4a28;
+    --bg: #1a1a1a; --bg2: #242424; --bg3: #2e2e2e;
+    --text: #f0f0f0; --text2: #aaa; --text3: #666;
+    --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+    --gl: #0a2e18; --gb: #0f4a28;
   }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; color: var(--text); min-height: 100vh; }
-.app { max-width: 480px; margin: 0 auto; background: var(--bg2); min-height: 100vh; position: relative; }
+.app { max-width: 480px; margin: 0 auto; background: var(--bg2); min-height: 100vh; }
 .hdr { background: var(--g); color: white; padding: 16px; display: flex; align-items: center; gap: 12px; }
 .hdr-ico { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .hdr-ico i { color: var(--g); font-size: 22px; }
+.hdr-info { flex: 1; }
 .hdr-title { font-size: 17px; font-weight: 600; }
 .hdr-sub { font-size: 13px; opacity: .85; margin-top: 1px; }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.4); flex-shrink: 0; transition: background .3s; }
+.sync-dot.live { background: white; }
 .tabs { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg2); position: sticky; top: 0; z-index: 10; }
-.tab { flex: 1; padding: 12px 4px; text-align: center; font-size: 13px; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.tab { flex: 1; padding: 12px 4px; text-align: center; font-size: 12px; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
 .tab.active { color: var(--g); border-bottom-color: var(--g); font-weight: 500; }
-.tab i { font-size: 15px; vertical-align: -2px; margin-right: 3px; }
+.tab i { font-size: 15px; vertical-align: -2px; margin-right: 2px; }
 .panel { display: none; padding: 14px; }
 .panel.active { display: block; }
 .lbl { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
@@ -61,8 +58,8 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
 .note-field { display: flex; gap: 8px; margin-bottom: 12px; }
 .note-field input { flex: 1; height: 36px; font-size: 13px; padding: 0 10px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg3); color: var(--text); }
 .note-field input:focus { outline: none; border-color: var(--g); background: var(--bg2); }
-.add-btn { height: 40px; padding: 0 16px; background: var(--g); color: white; border: none; border-radius: var(--radius); font-size: 15px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
-.add-btn:active { background: var(--gd); transform: scale(0.97); }
+.add-btn { height: 40px; padding: 0 16px; background: var(--g); color: white; border: none; border-radius: var(--radius); font-size: 15px; cursor: pointer; flex-shrink: 0; }
+.add-btn:active { background: var(--gd); transform: scale(.97); }
 .name-row { display: flex; gap: 8px; margin-bottom: 14px; }
 .name-row input { flex: 1; height: 40px; font-size: 14px; padding: 0 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); }
 .name-row input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 2px rgba(6,199,85,.15); }
@@ -81,11 +78,14 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
 .ci-note i { font-size: 13px; vertical-align: -1px; margin-right: 3px; }
 .summary { padding: 12px 14px; background: var(--gl); border-radius: var(--radius); border: 0.5px solid var(--gb); margin-bottom: 12px; }
 .sum-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: var(--gd); }
-.submit-btn { width: 100%; height: 48px; background: var(--g); color: white; border: none; border-radius: var(--radius-lg); font-size: 16px; font-weight: 500; cursor: pointer; letter-spacing: .02em; }
+.submit-btn { width: 100%; height: 48px; background: var(--g); color: white; border: none; border-radius: var(--radius-lg); font-size: 16px; font-weight: 500; cursor: pointer; }
 .submit-btn:active { background: var(--gd); }
 .submit-btn:disabled { background: var(--border2); cursor: default; color: var(--text3); }
 .empty { text-align: center; padding: 40px 16px; color: var(--text3); font-size: 14px; }
 .empty i { font-size: 36px; margin-bottom: 10px; display: block; opacity: .3; }
+.loading { text-align: center; padding: 32px 16px; color: var(--text3); font-size: 14px; }
+.loading i { font-size: 24px; display: block; margin-bottom: 8px; opacity: .4; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .order-card { background: var(--bg3); border-radius: var(--radius-lg); border: 0.5px solid var(--border); margin-bottom: 10px; overflow: hidden; }
 .oc-hdr { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
 .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--g); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; flex-shrink: 0; }
@@ -102,7 +102,7 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
 .oi-note i { font-size: 12px; vertical-align: -1px; margin-right: 2px; }
 .sec-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .clear-btn { font-size: 12px; color: var(--text3); background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 5px 12px; cursor: pointer; }
-.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-bottom: 14px; }
 .stat { background: var(--bg3); border-radius: var(--radius); padding: 14px 12px; text-align: center; }
 .stat-n { font-size: 22px; font-weight: 600; color: var(--text); }
 .stat-l { font-size: 12px; color: var(--text3); margin-top: 3px; }
@@ -122,8 +122,8 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
 .isum-qty { font-size: 13px; color: var(--text2); white-space: nowrap; }
 .isum-amt { font-size: 13px; font-weight: 500; color: var(--gd); min-width: 64px; text-align: right; white-space: nowrap; }
 .copy-btn { width: 100%; height: 44px; background: var(--bg3); color: var(--text); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); font-size: 14px; cursor: pointer; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.copy-btn:active { background: var(--gb); }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.82); color: white; padding: 10px 20px; border-radius: 24px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 999; white-space: nowrap; backdrop-filter: blur(4px); }
+.copy-btn:active { background: var(--gl); }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.82); color: white; padding: 10px 20px; border-radius: 24px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 999; white-space: nowrap; }
 .toast.show { opacity: 1; }
 </style>
 </head>
@@ -131,10 +131,11 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
 <div class="app">
   <div class="hdr">
     <div class="hdr-ico"><i class="ti ti-shopping-cart"></i></div>
-    <div>
+    <div class="hdr-info">
       <div class="hdr-title">🍱 團體點餐</div>
-      <div class="hdr-sub">自由輸入餐點，一起統計！</div>
+      <div class="hdr-sub">即時同步，大家一起點！</div>
     </div>
+    <div class="sync-dot" id="syncDot" title="連線狀態"></div>
   </div>
 
   <div class="tabs">
@@ -171,40 +172,62 @@ body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "S
       <span style="font-size:15px;font-weight:500">所有訂單</span>
       <button class="clear-btn" onclick="clearAll()"><i class="ti ti-trash" style="font-size:13px;vertical-align:-1px"></i> 清空全部</button>
     </div>
-    <div id="orderList"></div>
+    <div id="orderList"><div class="loading"><i class="ti ti-refresh"></i>載入中…</div></div>
   </div>
 
   <div id="tab-stats" class="panel">
-    <div id="statsContent"></div>
+    <div id="statsContent"><div class="loading"><i class="ti ti-refresh"></i>載入中…</div></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCLl_EZ3PAsVKPdE_CacCKN6-ZqXZhd5ck",
+  authDomain: "orderlunch-1382f.firebaseapp.com",
+  databaseURL: "https://orderlunch-1382f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "orderlunch-1382f",
+  storageBucket: "orderlunch-1382f.firebasestorage.app",
+  messagingSenderId: "805911589598",
+  appId: "1:805911589598:web:bf12cd3ddbd46889d9c84f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const ordersRef = ref(db, 'orders');
+
+let orders = {};
 let cart = [];
-let orders = [];
-try { orders = JSON.parse(localStorage.getItem('grporder_v1') || '[]'); } catch(e) {}
 
-function save() { try { localStorage.setItem('grporder_v1', JSON.stringify(orders)); } catch(e) {} }
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-function switchTab(t) {
-  ['order','list','stats'].forEach((n,i) => {
-    document.querySelectorAll('.tab')[i].classList.toggle('active', n===t);
-    document.getElementById('tab-'+n).classList.toggle('active', n===t);
-  });
-  if (t==='list') renderOrders();
-  if (t==='stats') renderStats();
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
 function flash(id) {
   const el = document.getElementById(id);
-  el.style.borderColor = '#e24b4a';
-  el.focus();
+  el.style.borderColor = '#e24b4a'; el.focus();
   setTimeout(() => el.style.borderColor = '', 1200);
 }
 
-function addItem() {
+window.switchTab = function(t) {
+  ['order','list','stats'].forEach((n,i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', n===t);
+    document.getElementById('tab-'+n).classList.toggle('active', n===t);
+  });
+};
+
+window.addItem = function() {
   const name = document.getElementById('iName').value.trim();
   const price = parseInt(document.getElementById('iPrice').value) || 0;
   const qty = Math.max(1, parseInt(document.getElementById('iQty').value) || 1);
@@ -220,10 +243,10 @@ function addItem() {
   document.getElementById('iNote').value = '';
   document.getElementById('iName').focus();
   renderCart();
-}
+};
 
-function changeCartQty(i, d) { cart[i].qty = Math.max(1, cart[i].qty + d); renderCart(); }
-function removeCartItem(i) { cart.splice(i, 1); renderCart(); }
+window.changeCartQty = function(i, d) { cart[i].qty = Math.max(1, cart[i].qty + d); renderCart(); };
+window.removeCartItem = function(i) { cart.splice(i, 1); renderCart(); };
 
 function renderCart() {
   const el = document.getElementById('cartList');
@@ -254,35 +277,64 @@ function renderCart() {
   document.getElementById('submitBtn').disabled = false;
 }
 
-function submitOrder() {
+window.submitOrder = async function() {
   const name = document.getElementById('uName').value.trim();
   if (!name) { flash('uName'); showToast('請先輸入名字！'); return; }
   if (!cart.length) { showToast('請先加入餐點！'); return; }
   const items = cart.map(c => ({...c}));
   const total = items.reduce((s, c) => s + c.price * c.qty, 0);
-  const idx = orders.findIndex(o => o.name === name);
-  if (idx >= 0) { orders[idx] = { name, items, total, paid: orders[idx].paid, time: Date.now() }; }
-  else { orders.push({ name, items, total, paid: false, time: Date.now() }); }
-  save();
+  const key = name.replace(/[.#$[\]]/g, '_');
+  const existingPaid = orders[key] ? orders[key].paid : false;
+  await set(ref(db, 'orders/' + key), { name, items, total, paid: existingPaid, time: Date.now() });
   cart = [];
   renderCart();
   showToast('✅ ' + name + ' 的訂單已送出！');
-}
+};
 
-function togglePaid(i) { orders[i].paid = !orders[i].paid; save(); renderOrders(); }
-function deleteOrder(i) { orders.splice(i, 1); save(); renderOrders(); }
+window.togglePaid = async function(key) {
+  const current = orders[key] ? orders[key].paid : false;
+  await update(ref(db, 'orders/' + key), { paid: !current });
+};
 
-function clearAll() {
-  if (!orders.length) return;
+window.deleteOrder = async function(key) {
+  await remove(ref(db, 'orders/' + key));
+};
+
+window.clearAll = async function() {
+  if (!Object.keys(orders).length) return;
   if (!confirm('確定要清空所有訂單？')) return;
-  orders = []; save(); renderOrders();
+  await remove(ordersRef);
   showToast('已清空所有訂單');
-}
+};
+
+window.copyResult = function() {
+  const list = Object.values(orders);
+  const totalAmt = list.reduce((s, o) => s + o.total, 0);
+  const imap = {};
+  list.forEach(o => o.items.forEach(i => {
+    const k = i.name + '|' + i.price;
+    if (!imap[k]) imap[k] = { name: i.name, price: i.price, qty: 0, amt: 0 };
+    imap[k].qty += i.qty; imap[k].amt += i.price * i.qty;
+  }));
+  let txt = '🍱 團體點餐統計\n──────────────\n';
+  list.forEach(o => {
+    txt += `${o.paid ? '✓' : '○'} ${o.name}：NT$ ${o.total}`;
+    const notes = o.items.filter(i => i.note).map(i => `${i.name}(${i.note})`);
+    if (notes.length) txt += ' ［' + notes.join('、') + '］';
+    txt += '\n';
+  });
+  txt += '──────────────\n';
+  Object.values(imap).sort((a, b) => b.qty - a.qty).forEach(i => { txt += `${i.name} × ${i.qty}份  NT$ ${i.amt}\n`; });
+  const paid = list.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
+  txt += `──────────────\n💰 總計：NT$ ${totalAmt}（共 ${list.length} 人）\n✓ 已付：NT$ ${paid}　○ 未付：NT$ ${totalAmt - paid}`;
+  navigator.clipboard.writeText(txt).then(() => showToast('📋 已複製！可貼到 LINE 群組'));
+};
 
 function renderOrders() {
   const el = document.getElementById('orderList');
-  if (!orders.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard"></i>還沒有人點餐</div>'; return; }
-  el.innerHTML = orders.map((o, oi) => {
+  const list = Object.entries(orders);
+  if (!list.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard"></i>還沒有人點餐</div>'; return; }
+  el.innerHTML = list.map(([key, o]) => {
     const rows = o.items.map(i => `
       <div class="oi-row">
         <div class="oi-main"><span>${esc(i.name)} × ${i.qty}</span><span>NT$ ${i.price * i.qty}</span></div>
@@ -293,8 +345,8 @@ function renderOrders() {
         <div class="avatar">${esc(o.name.slice(0,1))}</div>
         <span class="oc-name">${esc(o.name)}</span>
         <span class="oc-total">NT$ ${o.total}</span>
-        <button class="pay-badge ${o.paid ? 'paid' : 'unpaid'}" onclick="togglePaid(${oi})">${o.paid ? '✓ 已付' : '未付'}</button>
-        <button class="oc-del" onclick="deleteOrder(${oi})"><i class="ti ti-trash"></i></button>
+        <button class="pay-badge ${o.paid ? 'paid' : 'unpaid'}" onclick="togglePaid('${key}')">${o.paid ? '✓ 已付' : '未付'}</button>
+        <button class="oc-del" onclick="deleteOrder('${key}')"><i class="ti ti-trash"></i></button>
       </div>
       <div class="oc-items">${rows}</div>
     </div>`;
@@ -303,12 +355,13 @@ function renderOrders() {
 
 function renderStats() {
   const el = document.getElementById('statsContent');
-  if (!orders.length) { el.innerHTML = '<div class="empty"><i class="ti ti-chart-bar"></i>還沒有訂單資料</div>'; return; }
-  const totalAmt = orders.reduce((s, o) => s + o.total, 0);
-  const paidAmt = orders.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
-  const paidCount = orders.filter(o => o.paid).length;
+  const list = Object.values(orders);
+  if (!list.length) { el.innerHTML = '<div class="empty"><i class="ti ti-chart-bar"></i>還沒有訂單資料</div>'; return; }
+  const totalAmt = list.reduce((s, o) => s + o.total, 0);
+  const paidAmt = list.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
+  const paidCount = list.filter(o => o.paid).length;
   const imap = {};
-  orders.forEach(o => o.items.forEach(i => {
+  list.forEach(o => o.items.forEach(i => {
     const k = i.name + '|' + i.price;
     if (!imap[k]) imap[k] = { name: i.name, price: i.price, qty: 0, amt: 0 };
     imap[k].qty += i.qty; imap[k].amt += i.price * i.qty;
@@ -317,21 +370,15 @@ function renderStats() {
   const totalItems = sorted.reduce((s, i) => s + i.qty, 0);
   el.innerHTML = `
     <div class="stats-grid">
-      <div class="stat"><div class="stat-n">${orders.length}</div><div class="stat-l">點餐人數</div></div>
+      <div class="stat"><div class="stat-n">${list.length}</div><div class="stat-l">點餐人數</div></div>
       <div class="stat"><div class="stat-n" style="color:var(--gd)">NT$ ${totalAmt}</div><div class="stat-l">總金額</div></div>
       <div class="stat"><div class="stat-n">${totalItems}</div><div class="stat-l">總份數</div></div>
-      <div class="stat"><div class="stat-n">NT$ ${Math.round(totalAmt / orders.length)}</div><div class="stat-l">平均消費</div></div>
+      <div class="stat"><div class="stat-n">NT$ ${Math.round(totalAmt / list.length)}</div><div class="stat-l">平均消費</div></div>
     </div>
     <div class="lbl" style="margin-bottom:8px">付款狀況</div>
     <div class="pay-summary">
-      <div class="pay-box paid-box">
-        <div class="pn">NT$ ${paidAmt}</div>
-        <div class="pl">已付 ${paidCount} 人</div>
-      </div>
-      <div class="pay-box unpaid-box">
-        <div class="pn">NT$ ${totalAmt - paidAmt}</div>
-        <div class="pl">未付 ${orders.length - paidCount} 人</div>
-      </div>
+      <div class="pay-box paid-box"><div class="pn">NT$ ${paidAmt}</div><div class="pl">已付 ${paidCount} 人</div></div>
+      <div class="pay-box unpaid-box"><div class="pn">NT$ ${totalAmt - paidAmt}</div><div class="pl">未付 ${list.length - paidCount} 人</div></div>
     </div>
     <div class="lbl" style="margin-bottom:8px">各品項統計</div>
     ${sorted.map(i => `
@@ -345,43 +392,24 @@ function renderStats() {
   `;
 }
 
-function copyResult() {
-  const totalAmt = orders.reduce((s, o) => s + o.total, 0);
-  const imap = {};
-  orders.forEach(o => o.items.forEach(i => {
-    const k = i.name + '|' + i.price;
-    if (!imap[k]) imap[k] = { name: i.name, price: i.price, qty: 0, amt: 0 };
-    imap[k].qty += i.qty; imap[k].amt += i.price * i.qty;
-  }));
-  let txt = '🍱 團體點餐統計\n──────────────\n';
-  orders.forEach(o => {
-    txt += `${o.paid ? '✓' : '○'} ${o.name}：NT$ ${o.total}`;
-    const notes = o.items.filter(i => i.note).map(i => `${i.name}(${i.note})`);
-    if (notes.length) txt += ' ［' + notes.join('、') + '］';
-    txt += '\n';
-  });
-  txt += '──────────────\n';
-  Object.values(imap).sort((a, b) => b.qty - a.qty).forEach(i => { txt += `${i.name} × ${i.qty}份  NT$ ${i.amt}\n`; });
-  const paid = orders.filter(o => o.paid).reduce((s, o) => s + o.total, 0);
-  txt += `──────────────\n💰 總計：NT$ ${totalAmt}（共 ${orders.length} 人）\n✓ 已付：NT$ ${paid}　○ 未付：NT$ ${totalAmt - paid}`;
-  navigator.clipboard.writeText(txt).then(() => showToast('📋 已複製！可貼到 LINE 群組'));
-}
-
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-let _tt;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2600);
-}
+onValue(ordersRef, (snapshot) => {
+  orders = snapshot.val() || {};
+  document.getElementById('syncDot').classList.add('live');
+  const active = document.querySelector('.tab.active');
+  if (active) {
+    const idx = [...document.querySelectorAll('.tab')].indexOf(active);
+    if (idx === 1) renderOrders();
+    if (idx === 2) renderStats();
+  }
+}, (error) => {
+  document.getElementById('syncDot').classList.remove('live');
+  showToast('⚠️ 連線失敗，請重新整理');
+});
 
 document.getElementById('iName').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iPrice').focus(); });
 document.getElementById('iPrice').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iQty').focus(); });
 document.getElementById('iQty').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iNote').focus(); });
-document.getElementById('iNote').addEventListener('keydown', e => { if(e.key==='Enter') addItem(); });
+document.getElementById('iNote').addEventListener('keydown', e => { if(e.key==='Enter') window.addItem(); });
 </script>
 </body>
 </html>
