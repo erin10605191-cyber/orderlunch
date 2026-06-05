@@ -281,7 +281,6 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
         <i class="ti ti-photo-up"></i>
         <span>點擊或拖曳上傳菜單圖片</span>
       </div>
-      <div class="upload-progress" id="uploadProgress"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="btnCancelModal">取消</button>
@@ -302,7 +301,6 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, remove, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLl_EZ3PAsVKPdE_CacCKN6-ZqXZhd5ck",
@@ -316,7 +314,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
 const EMOJIS = ['🍱','🍜','🍣','🍔','🌮','🍕','🥗','🍗','🥤','🧋','☕','🍩'];
 let selectedEmoji = EMOJIS[0];
@@ -480,7 +477,7 @@ function openModal(){
   zone.classList.remove('has-img');
   zone.innerHTML = `<input type="file" id="gMenuImg" accept="image/*"><i class="ti ti-photo-up"></i><span>點擊或拖曳上傳菜單圖片</span>`;
   bindUploadZone();
-  document.getElementById('uploadProgress').classList.remove('show');
+
   buildEmojiGrid();
   document.getElementById('modalOverlay').classList.add('show');
 }
@@ -501,7 +498,7 @@ async function createGroup(){
   try {
     let menuUrl = null;
     if(menuImgFile){
-      menuUrl = await uploadMenuImage(groupId, menuImgFile);
+      menuUrl = await compressAndEncodeImage(menuImgFile);
     }
     await set(newRef, { name, emoji: selectedEmoji, date, time, createdAt: Date.now(), ...(menuUrl ? {menuUrl} : {}) });
     closeModal();
@@ -510,18 +507,25 @@ async function createGroup(){
   confirmBtn.disabled = false; confirmBtn.textContent = '建立揪團';
 }
 
-async function uploadMenuImage(groupId, file){
+async function compressAndEncodeImage(file){
   return new Promise((resolve, reject) => {
-    const storageRef = sref(storage, 'menus/' + groupId + '/' + file.name);
-    const task = uploadBytesResumable(storageRef, file);
-    const bar = document.getElementById('uploadProgressBar');
-    const prog = document.getElementById('uploadProgress');
-    prog.classList.add('show');
-    task.on('state_changed',
-      snap => { bar.style.width = (snap.bytesTransferred / snap.totalBytes * 100) + '%'; },
-      err => reject(err),
-      async () => { resolve(await getDownloadURL(task.snapshot.ref)); }
-    );
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1000;
+      let w = img.width, h = img.height;
+      if(w > MAX || h > MAX){
+        if(w > h){ h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = reject;
+    img.src = url;
   });
 }
 
