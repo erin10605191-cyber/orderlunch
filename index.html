@@ -571,7 +571,7 @@ function renderGroups(){
   list.sort((a,b) => b[1].createdAt - a[1].createdAt);
   el.innerHTML = list.map(([id,g]) => {
     const status = getGroupStatus(g);
-    const statusMap = {open:'收單中',closed:'已截止',upcoming:'尚未開始'};
+    const statusMap = {open:'收單中',closed:'已截止',upcoming:'收單中'};
     const statusClass = {open:'status-open',closed:'status-closed',upcoming:'status-upcoming'};
     const orderCount = g.orders ? Object.keys(g.orders).length : 0;
     const totalAmt = g.orders ? Object.values(g.orders).reduce((s,o) => s+o.total, 0) : 0;
