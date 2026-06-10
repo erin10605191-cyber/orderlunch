@@ -100,6 +100,14 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .note-input:focus{outline:none;border-color:var(--g);background:var(--bg2)}
 .add-btn{height:40px;padding:0 16px;background:var(--g);color:white;border:none;border-radius:var(--radius);font-size:15px;cursor:pointer;flex-shrink:0}
 .add-btn:active{background:var(--gd)}
+
+/* 部門選擇 */
+.dept-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dept-chip{padding:6px 14px;height:34px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:20px;font-size:13px;cursor:pointer;color:var(--text2);white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.dept-chip i{font-size:13px}
+.dept-chip.selected{background:var(--gl);border-color:var(--g);color:var(--gd);font-weight:500}
+.dept-chip:active{background:var(--gl)}
+
 .name-row{display:flex;gap:8px;margin-bottom:14px}
 .name-row input{flex:1;height:40px;font-size:14px;padding:0 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text)}
 .name-row input:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 2px rgba(6,199,85,.15)}
@@ -133,6 +141,15 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px}
 .loading-state{text-align:center;padding:40px 16px;color:var(--text3);font-size:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* 部門分區 (所有訂單) */
+.dept-section{margin-bottom:16px}
+.dept-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg3);border-radius:var(--radius);border:0.5px solid var(--border);margin-bottom:8px}
+.dept-section-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.dept-section-name i{font-size:14px;color:var(--text3)}
+.dept-section-subtotal{font-size:13px;font-weight:600;color:var(--gd)}
+.dept-section-count{font-size:11px;color:var(--text3);margin-left:4px;font-weight:400}
+
 .order-card{background:var(--bg3);border-radius:var(--radius-lg);border:0.5px solid var(--border);margin-bottom:10px;overflow:hidden}
 .oc-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:0.5px solid var(--border)}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;flex-shrink:0}
@@ -175,6 +192,15 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .pay-box.paid-box .pn{color:#085041}.pay-box.unpaid-box .pn{color:#791f1f}
 .pay-box .pl{font-size:12px;margin-top:3px}
 .pay-box.paid-box .pl{color:#0f6e56}.pay-box.unpaid-box .pl{color:#a32d2d}
+
+/* 統計彙整部門小計 */
+.dept-stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-radius:var(--radius);margin-bottom:6px;border:0.5px solid var(--border)}
+.dept-stat-name{font-size:13px;color:var(--text);display:flex;align-items:center;gap:5px}
+.dept-stat-name i{font-size:13px;color:var(--text3)}
+.dept-stat-right{display:flex;align-items:center;gap:10px}
+.dept-stat-count{font-size:12px;color:var(--text3)}
+.dept-stat-amt{font-size:13px;font-weight:600;color:var(--gd)}
+
 .isum-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg3);border-radius:var(--radius);margin-bottom:6px;border:0.5px solid var(--border)}
 .isum-name{flex:1;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .isum-price{font-size:12px;color:var(--text3);white-space:nowrap}
@@ -210,6 +236,9 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
 .el-detail{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .el-time{font-size:11px;color:var(--text3)}
 .el-arrow{font-size:12px;color:var(--text2)}
+
+/* 部門標籤 (訂單卡片上) */
+.dept-tag{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:#e8f0fe;color:#1a56ab;border:0.5px solid #bcd0f7;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -256,6 +285,8 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
       </div>
       <div class="lbl">你的名字</div>
       <div class="name-row"><input id="uName" type="text" placeholder="輸入你的名字" maxlength="12"></div>
+      <div class="lbl">所屬部門</div>
+      <div class="dept-row" id="deptChips"></div>
       <div class="lbl">新增餐點</div>
       <p class="hint">填入名稱、單價、數量，可勾選半飯，按 + 加入</p>
       <div class="field-group">
@@ -283,10 +314,7 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI
       <div class="sec-hdr">
         <span style="font-size:15px;font-weight:500">所有訂單</span>
       </div>
-
       <div id="orderList"><div class="loading-state"><div class="spinner"></div><br>載入中…</div></div>
-
-      <!-- 清空全部移至底部 -->
       <button class="clear-all-bottom" id="btnClearAll">
         <i class="ti ti-trash" style="font-size:14px"></i> 清空所有訂單
       </button>
@@ -391,7 +419,12 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const EMOJIS = ['🍱','🍜','🍣','🍔','🌮','🍕','🥗','🍗','🥤','🧋','☕','🍩'];
+const DEPTS = ['研發','管理','業務','製造','品保'];
+const DEPT_ICONS = { '研發':'ti-cpu', '管理':'ti-building', '業務':'ti-briefcase', '製造':'ti-settings', '品保':'ti-shield-check' };
+const NO_DEPT = '未分部門';
+
 let selectedEmoji = EMOJIS[0];
+let selectedDept = '';
 let groups = {};
 let currentGroupId = null;
 let orders = {};
@@ -401,7 +434,6 @@ let currentTab = 'order';
 let ordersUnsubscribe = null;
 let extendLogsUnsubscribe = null;
 
-// 防抖計時器，避免每個按鍵都寫入 Firebase
 const changeDebounce = {};
 
 // ── Helpers ──────────────────────────────────────────
@@ -444,6 +476,21 @@ function formatDeadline(g){
   return g.time ? `${dateStr} 收單 ${g.time}` : dateStr;
 }
 
+// ── Dept Chips ────────────────────────────────────────
+function renderDeptChips(){
+  const el = document.getElementById('deptChips');
+  el.innerHTML = DEPTS.map(d => `
+    <button class="dept-chip${selectedDept===d?' selected':''}" data-dept="${d}">
+      <i class="ti ${DEPT_ICONS[d]||'ti-users'}"></i>${d}
+    </button>`).join('');
+  el.querySelectorAll('.dept-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDept = selectedDept === btn.dataset.dept ? '' : btn.dataset.dept;
+      renderDeptChips();
+    });
+  });
+}
+
 // ── Change per order ──────────────────────────────────
 function calcChangeText(received, due){
   if(!received) return { text: '輸入收款金額', cls: 'zero' };
@@ -457,21 +504,16 @@ function bindChangeInput(key, due, savedReceived){
   const input = document.querySelector(`.oc-change-input[data-ck="${key}"]`);
   const result = document.querySelector(`.oc-change-result[data-rk="${key}"]`);
   if(!input || !result) return;
-
-  // 從 Firebase 帶入已儲存的值
   if(savedReceived){
     input.value = savedReceived;
     const r = calcChangeText(parseFloat(savedReceived), due);
     result.textContent = r.text;
     result.className = 'oc-change-result ' + r.cls;
   }
-
   input.addEventListener('input', () => {
     const r = calcChangeText(parseFloat(input.value), due);
     result.textContent = r.text;
     result.className = 'oc-change-result ' + r.cls;
-
-    // 防抖：停止輸入 800ms 後才寫入 Firebase
     clearTimeout(changeDebounce[key]);
     changeDebounce[key] = setTimeout(async () => {
       const val = input.value === '' ? null : parseFloat(input.value);
@@ -485,10 +527,8 @@ function openExtendModal(groupId) {
   const g = groups[groupId] || groups[currentGroupId];
   if(!g) return;
   const targetId = groupId || currentGroupId;
-
   let baseDate = g.date || new Date().toISOString().split('T')[0];
   let baseTime = g.time || '12:00';
-
   if(g.date && g.time) {
     const deadline = new Date(g.date + 'T' + g.time);
     if(deadline < new Date()) {
@@ -500,36 +540,25 @@ function openExtendModal(groupId) {
       baseTime = String(h).padStart(2,'0') + ':' + String(rounded).padStart(2,'0');
     }
   }
-
   document.getElementById('extDate').value = baseDate;
   document.getElementById('extTime').value = baseTime;
   document.getElementById('extOperator').value = '';
-
   document.querySelectorAll('#quickBtns .quick-btn').forEach(btn => {
     btn.onclick = () => {
       const now = new Date();
       let base = g.date && g.time ? new Date(g.date + 'T' + g.time) : now;
       if(base < now) base = now;
-
-      if(btn.dataset.tomorrow) {
-        base.setDate(base.getDate() + 1);
-      } else {
-        base = new Date(base.getTime() + parseInt(btn.dataset.min) * 60000);
-      }
+      if(btn.dataset.tomorrow) { base.setDate(base.getDate() + 1); }
+      else { base = new Date(base.getTime() + parseInt(btn.dataset.min) * 60000); }
       document.getElementById('extDate').value = base.toISOString().split('T')[0];
       const hh = String(base.getHours()).padStart(2,'0');
       const mm = String(base.getMinutes()).padStart(2,'0');
       document.getElementById('extTime').value = hh + ':' + mm;
     };
   });
-
   document.getElementById('btnConfirmExtend').onclick = async () => {
     const operator = document.getElementById('extOperator').value.trim();
-    if(!operator) {
-      flash('extOperator');
-      showToast('請填寫姓名才能延長收單');
-      return;
-    }
+    if(!operator) { flash('extOperator'); showToast('請填寫姓名才能延長收單'); return; }
     const newDate = document.getElementById('extDate').value;
     const newTime = document.getElementById('extTime').value;
     if(!newDate || !newTime) { showToast('請選擇日期和時間'); return; }
@@ -541,18 +570,12 @@ function openExtendModal(groupId) {
       const logRef = push(ref(db, 'groups/' + targetId + '/extendLogs'));
       await Promise.all([
         update(ref(db, 'groups/' + targetId), { date: newDate, time: newTime }),
-        set(logRef, {
-          operator,
-          oldDeadline,
-          newDeadline: newDate + ' ' + newTime,
-          at: Date.now()
-        })
+        set(logRef, { operator, oldDeadline, newDeadline: newDate + ' ' + newTime, at: Date.now() })
       ]);
       document.getElementById('extendModalOverlay').classList.remove('show');
       showToast('✅ ' + operator + ' 已將收單延長到 ' + newDate.slice(5).replace('-','/') + ' ' + newTime);
     } catch(e) { showToast('❌ 更新失敗，請重試'); }
   };
-
   document.getElementById('extendModalOverlay').classList.add('show');
 }
 
@@ -596,7 +619,6 @@ function renderGroups(){
       </div>
     </div>`;
   }).join('');
-
   document.querySelectorAll('.group-card').forEach(card => {
     card.addEventListener('click', () => enterGroup(card.dataset.gid));
   });
@@ -630,6 +652,8 @@ function enterGroup(id){
   } else {
     menuWrap.style.display = 'none';
   }
+  selectedDept = '';
+  renderDeptChips();
   switchTab('order');
   checkClosed();
   if(ordersUnsubscribe) ordersUnsubscribe();
@@ -649,16 +673,13 @@ function checkClosed(){
   const g = groups[currentGroupId];
   if(!g) return;
   const closed = getGroupStatus(g) === 'closed';
-
   document.getElementById('closedNotice').style.display = closed ? 'flex' : 'none';
   document.getElementById('extendHdrBtn').style.display = closed ? 'flex' : 'none';
-
   document.getElementById('submitBtn').disabled = closed || !cart.length;
   ['iName','iPrice','iQty','iHalf','iNote','btnAddItem'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.disabled = closed;
   });
-
   const sub = document.getElementById('orderHdrSub');
   sub.innerHTML = g.date ? `<i class="ti ti-clock"></i> 收單：${formatDeadline(g)}` : '';
 }
@@ -826,9 +847,10 @@ async function submitOrder(){
     const key = name.replace(/[.#$[\]/]/g, '_');
     const existingPaid = orders[key] ? orders[key].paid : false;
     const existingChange = orders[key] ? (orders[key].changeReceived ?? null) : null;
-    await set(ref(db, 'groups/' + currentGroupId + '/orders/' + key), {name, items, total, paid: existingPaid, changeReceived: existingChange, time: Date.now()});
+    const dept = selectedDept || '';
+    await set(ref(db, 'groups/' + currentGroupId + '/orders/' + key), {name, dept, items, total, paid: existingPaid, changeReceived: existingChange, time: Date.now()});
     cart = []; renderCart();
-    showToast('✅ ' + name + ' 的訂單已送出！');
+    showToast('✅ ' + name + (dept ? '（' + dept + '）' : '') + ' 的訂單已送出！');
   } catch(e){ showToast('❌ 送出失敗，請重試'); }
   btn.disabled = false; btn.textContent = '送出訂單';
 }
@@ -848,44 +870,68 @@ async function clearAll(){
   showToast('已清空所有訂單');
 }
 
+// ── Render Orders (依部門分組) ─────────────────────────
 function renderOrders(){
   const el = document.getElementById('orderList');
   const list = Object.entries(orders);
   if(!list.length){ el.innerHTML = '<div class="empty"><i class="ti ti-clipboard"></i>還沒有人點餐</div>'; return; }
-  el.innerHTML = list.sort((a,b) => a[1].time - b[1].time).map(([key,o]) => {
-    const rows = o.items.map(i => `
-      <div class="oi-row">
-        <div class="oi-main"><span>${esc(i.name)} × ${i.qty}</span><span>NT$ ${i.price*i.qty}</span></div>
-        ${(i.half || i.note) ? `<div class="oi-tags">
-          ${i.half ? '<span class="tag-half">🍚 半飯</span>' : ''}
-          ${i.note ? `<span class="tag-note"><i class="ti ti-message-circle"></i>${esc(i.note)}</span>` : ''}
-        </div>` : ''}
-      </div>`).join('');
-    return `<div class="order-card">
-      <div class="oc-hdr">
-        <div class="avatar">${esc(o.name.slice(0,1))}</div>
-        <span class="oc-name">${esc(o.name)}</span>
-        <span class="oc-total">NT$ ${o.total}</span>
-        <button class="pay-badge ${o.paid?'paid':'unpaid'}" data-pk="${key}">${o.paid?'✓ 已付':'未付'}</button>
-        <button class="oc-del" data-dk="${key}"><i class="ti ti-trash"></i></button>
-      </div>
-      <div class="oc-items">${rows}</div>
-      <div class="oc-change-row">
-        <span class="oc-change-label"><i class="ti ti-coins"></i>找零</span>
-        <input class="oc-change-input" type="number" placeholder="收款金額" min="0" step="1" data-ck="${key}" data-due="${o.total}">
-        <span class="oc-change-result zero" data-rk="${key}">輸入收款金額</span>
-      </div>
-    </div>`;
-  }).join('');
 
+  // 依部門分組
+  const deptMap = {};
+  list.sort((a,b) => a[1].time - b[1].time).forEach(([key, o]) => {
+    const dept = o.dept || NO_DEPT;
+    if(!deptMap[dept]) deptMap[dept] = [];
+    deptMap[dept].push([key, o]);
+  });
+
+  // 排序：已知部門按 DEPTS 順序，未分部門放最後
+  const deptOrder = [...DEPTS.filter(d => deptMap[d]), ...(deptMap[NO_DEPT] ? [NO_DEPT] : [])];
+
+  let html = '';
+  deptOrder.forEach(dept => {
+    const entries = deptMap[dept];
+    const subtotal = entries.reduce((s, [,o]) => s + o.total, 0);
+    const icon = DEPT_ICONS[dept] ? `<i class="ti ${DEPT_ICONS[dept]}"></i>` : `<i class="ti ti-users"></i>`;
+    html += `<div class="dept-section">
+      <div class="dept-section-hdr">
+        <span class="dept-section-name">${icon}${esc(dept)}<span class="dept-section-count">${entries.length} 人</span></span>
+        <span class="dept-section-subtotal">NT$ ${subtotal}</span>
+      </div>`;
+    entries.forEach(([key, o]) => {
+      const rows = o.items.map(i => `
+        <div class="oi-row">
+          <div class="oi-main"><span>${esc(i.name)} × ${i.qty}</span><span>NT$ ${i.price*i.qty}</span></div>
+          ${(i.half || i.note) ? `<div class="oi-tags">
+            ${i.half ? '<span class="tag-half">🍚 半飯</span>' : ''}
+            ${i.note ? `<span class="tag-note"><i class="ti ti-message-circle"></i>${esc(i.note)}</span>` : ''}
+          </div>` : ''}
+        </div>`).join('');
+      html += `<div class="order-card">
+        <div class="oc-hdr">
+          <div class="avatar">${esc(o.name.slice(0,1))}</div>
+          <span class="oc-name">${esc(o.name)}</span>
+          <span class="oc-total">NT$ ${o.total}</span>
+          <button class="pay-badge ${o.paid?'paid':'unpaid'}" data-pk="${key}">${o.paid?'✓ 已付':'未付'}</button>
+          <button class="oc-del" data-dk="${key}"><i class="ti ti-trash"></i></button>
+        </div>
+        <div class="oc-items">${rows}</div>
+        <div class="oc-change-row">
+          <span class="oc-change-label"><i class="ti ti-coins"></i>找零</span>
+          <input class="oc-change-input" type="number" placeholder="收款金額" min="0" step="1" data-ck="${key}" data-due="${o.total}">
+          <span class="oc-change-result zero" data-rk="${key}">輸入收款金額</span>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  el.innerHTML = html;
   document.querySelectorAll('.pay-badge[data-pk]').forEach(btn => {
     btn.addEventListener('click', () => togglePaid(btn.dataset.pk));
   });
   document.querySelectorAll('.oc-del[data-dk]').forEach(btn => {
     btn.addEventListener('click', () => deleteOrder(btn.dataset.dk));
   });
-
-  // Bind change inputs after render，帶入 Firebase 已存的收款金額
   list.forEach(([key, o]) => bindChangeInput(key, o.total, o.changeReceived ?? null));
 }
 
@@ -900,6 +946,7 @@ function buildItemMap(orderList) {
   return imap;
 }
 
+// ── Render Stats ──────────────────────────────────────
 function renderStats(){
   const el = document.getElementById('statsContent');
   const list = Object.values(orders);
@@ -910,19 +957,41 @@ function renderStats(){
   const imap = buildItemMap(list);
   const sorted = Object.values(imap).sort((a,b) => b.qty - a.qty);
   const totalItems = sorted.reduce((s,i) => s+i.qty, 0);
+
+  // 部門小計
+  const deptTotals = {};
+  list.forEach(o => {
+    const dept = o.dept || NO_DEPT;
+    if(!deptTotals[dept]) deptTotals[dept] = { amt: 0, count: 0 };
+    deptTotals[dept].amt += o.total;
+    deptTotals[dept].count++;
+  });
+  const deptOrder = [...DEPTS.filter(d => deptTotals[d]), ...(deptTotals[NO_DEPT] ? [NO_DEPT] : [])];
+
   el.innerHTML = `
     <div class="stats-grid">
       <div class="stat"><div class="stat-n">${list.length}</div><div class="stat-l">點餐人數</div></div>
       <div class="stat"><div class="stat-n" style="color:var(--gd)">NT$ ${totalAmt}</div><div class="stat-l">總金額</div></div>
       <div class="stat"><div class="stat-n">${totalItems}</div><div class="stat-l">總份數</div></div>
-      <div class="stat"><div class="stat-n">NT$ ${Math.round(totalAmt/list.length)}</div><div class="stat-l">平均消費</div></div>
+      <div class="stat"><div class="stat-n">${paidCount}</div><div class="stat-l">已付人數</div></div>
     </div>
     <div class="lbl" style="margin-bottom:8px">付款狀況</div>
     <div class="pay-summary">
       <div class="pay-box paid-box"><div class="pn">NT$ ${paidAmt}</div><div class="pl">已付 ${paidCount} 人</div></div>
       <div class="pay-box unpaid-box"><div class="pn">NT$ ${totalAmt-paidAmt}</div><div class="pl">未付 ${list.length-paidCount} 人</div></div>
     </div>
-    <div class="lbl" style="margin-bottom:8px">各品項統計</div>
+    <div class="lbl" style="margin-bottom:8px">部門小計</div>
+    ${deptOrder.map(dept => {
+      const icon = DEPT_ICONS[dept] ? `<i class="ti ${DEPT_ICONS[dept]}"></i>` : `<i class="ti ti-users"></i>`;
+      return `<div class="dept-stat-row">
+        <span class="dept-stat-name">${icon}${esc(dept)}</span>
+        <span class="dept-stat-right">
+          <span class="dept-stat-count">${deptTotals[dept].count} 人</span>
+          <span class="dept-stat-amt">NT$ ${deptTotals[dept].amt}</span>
+        </span>
+      </div>`;
+    }).join('')}
+    <div class="lbl" style="margin-top:14px;margin-bottom:8px">各品項統計（全部）</div>
     ${sorted.map(i => `
       <div class="isum-row">
         <span class="isum-name">${esc(i.name)}${i.half ? ' <span class="tag-half">🍚 半飯</span>' : ''}</span>
@@ -953,17 +1022,33 @@ function copyResult(){
   const list = Object.values(orders);
   const totalAmt = list.reduce((s,o) => s+o.total, 0);
   const imap = buildItemMap(list);
+
+  // 部門小計
+  const deptTotals = {};
+  list.forEach(o => {
+    const dept = o.dept || NO_DEPT;
+    if(!deptTotals[dept]) deptTotals[dept] = { amt: 0, count: 0 };
+    deptTotals[dept].amt += o.total;
+    deptTotals[dept].count++;
+  });
+  const deptOrder = [...DEPTS.filter(d => deptTotals[d]), ...(deptTotals[NO_DEPT] ? [NO_DEPT] : [])];
+
   let txt = `${g.emoji||'🍱'} ${g.name} 點餐統計\n`;
   if(g.date) txt += `📅 ${formatDeadline(g)}\n`;
   txt += '──────────────\n';
   list.forEach(o => {
-    txt += `${o.paid?'✓':'○'} ${o.name}：NT$ ${o.total}`;
+    const deptLabel = o.dept ? `【${o.dept}】` : '';
+    txt += `${o.paid?'✓':'○'} ${deptLabel}${o.name}：NT$ ${o.total}`;
     const tags = o.items.filter(i => i.half||i.note).map(i => {
       const parts = [i.half?'半飯':'', i.note].filter(Boolean).join('，');
       return `${i.name}(${parts})`;
     });
     if(tags.length) txt += ' ［' + tags.join('、') + '］';
     txt += '\n';
+  });
+  txt += '──────────────\n📊 部門小計\n';
+  deptOrder.forEach(dept => {
+    txt += `${dept}：${deptTotals[dept].count} 人 / NT$ ${deptTotals[dept].amt}\n`;
   });
   txt += '──────────────\n';
   Object.values(imap).sort((a,b) => b.qty-a.qty).forEach(i => {
@@ -1056,7 +1141,6 @@ document.getElementById('iName').addEventListener('keydown', e => { if(e.key==='
 document.getElementById('iPrice').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iQty').focus(); });
 document.getElementById('iQty').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('iNote').focus(); });
 document.getElementById('iNote').addEventListener('keydown', e => { if(e.key==='Enter') addItem(); });
-
 document.getElementById('extendHdrBtn').addEventListener('click', () => openExtendModal(currentGroupId));
 document.getElementById('closedExtendBtn').addEventListener('click', () => openExtendModal(currentGroupId));
 document.getElementById('btnCancelExtend').addEventListener('click', closeExtendModal);
