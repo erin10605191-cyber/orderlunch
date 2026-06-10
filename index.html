@@ -419,8 +419,8 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const EMOJIS = ['🍱','🍜','🍣','🍔','🌮','🍕','🥗','🍗','🥤','🧋','☕','🍩'];
-const DEPTS = ['研發','管理','業務','製造','品保'];
-const DEPT_ICONS = { '研發':'ti-cpu', '管理':'ti-building', '業務':'ti-briefcase', '製造':'ti-settings', '品保':'ti-shield-check' };
+const DEPTS = ['總經理室','研發','管理','業務','製造','品保'];
+const DEPT_ICONS = { '總經理室':'ti-cpu','研發':'ti-cpu', '管理':'ti-building', '業務':'ti-briefcase', '製造':'ti-settings', '品保':'ti-shield-check' };
 const NO_DEPT = '未分部門';
 
 let selectedEmoji = EMOJIS[0];
