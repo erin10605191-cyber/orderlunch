@@ -955,7 +955,7 @@ function renderStats(){
   const paidAmt = list.filter(o=>o.paid).reduce((s,o) => s+o.total, 0);
   const paidCount = list.filter(o=>o.paid).length;
   const imap = buildItemMap(list);
-  const sorted = Object.values(imap).sort((a,b) => b.qty - a.qty);
+  const sorted = Object.values(imap).sort((a,b) => a.name.localeCompare(b.name, 'zh-Hant'));
   const totalItems = sorted.reduce((s,i) => s+i.qty, 0);
 
   // 部門小計
@@ -1051,7 +1051,7 @@ function copyResult(){
     txt += `${dept}：${deptTotals[dept].count} 人 / NT$ ${deptTotals[dept].amt}\n`;
   });
   txt += '──────────────\n';
-  Object.values(imap).sort((a,b) => b.qty-a.qty).forEach(i => {
+  Object.values(imap).sort((a,b) => a.name.localeCompare(b.name, 'zh-Hant')).forEach(i => {
     const label = i.half ? `${i.name}（半飯）` : i.name;
     txt += `${label} × ${i.qty}份  NT$ ${i.amt}\n`;
   });
