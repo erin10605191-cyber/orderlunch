@@ -859,8 +859,13 @@ async function togglePaid(key){
   await update(ref(db, 'groups/' + currentGroupId + '/orders/' + key), {paid: !orders[key].paid});
 }
 
+// ★ 已加入刪除確認
 async function deleteOrder(key){
+  const o = orders[key];
+  const name = o ? o.name : '';
+  if(!confirm('確定要刪除「' + name + '」的訂單嗎？')) return;
   await remove(ref(db, 'groups/' + currentGroupId + '/orders/' + key));
+  showToast('已刪除「' + name + '」的訂單');
 }
 
 async function clearAll(){
